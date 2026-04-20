@@ -36,7 +36,7 @@ function CountryPill({ code }: { code: string }) {
 
 export function TopAffiliateMembers() {
   return (
-    <Card className="flex flex-col gap-6 p-6">
+    <Card className="flex flex-col gap-2 md:gap-4 p-3 md:p-6">
       <CardHeader title="Top 10 Affiliate Members" />
 
       <div className="-mx-6 overflow-x-auto">

@@ -15,7 +15,7 @@ import {
 
 export default function DashboardPage() {
   return (
-    <main className="flex flex-col gap-6 p-6 lg:p-8">
+    <main className="flex flex-col gap-3 md:gap-6 p-3 md:p-6 lg:p-8">
       <TitleBar />
 
       <MyPerformance />

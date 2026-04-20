@@ -27,10 +27,10 @@ const MY_PERFORMANCE = [
 
 export function MyPerformance() {
   return (
-    <section className="flex w-full flex-col gap-4">
+    <section className="flex w-full flex-col gap-2 md:gap-4">
       <CardHeader title="My Performance" />
 
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-2 md:gap-4 md:grid-cols-2 xl:grid-cols-3">
         {MY_PERFORMANCE.map(({ label, value, change, Icon, detail }) => (
           <article
             key={label}

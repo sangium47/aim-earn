@@ -16,11 +16,11 @@ export function BottomPanel({
   rows,
 }: BottomPanelProps) {
   return (
-    <Card className="flex h-full flex-col gap-6 p-6">
+    <Card className="flex h-full flex-col gap-2 md:gap-4 p-3 md:p-6">
       <CardHeader title={title} />
 
       {/* Summary block with accent bar */}
-      <div className="flex items-center gap-4 rounded-2xl border border-[#e7e7e7] p-4">
+      <div className="flex items-center gap-2 md:gap-4 rounded-2xl border border-[#e7e7e7] p-4">
         <span aria-hidden className="h-16 w-2 rounded-full bg-[#f8d237]" />
         <p className="flex-1 text-base text-[#1e1e1e]">{summaryText}</p>
         <p className="text-[32px] font-medium leading-[1.2] tracking-[0.01em] text-[#1e1e1e]">

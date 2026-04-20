@@ -175,7 +175,9 @@ export function CountrySelect({
         aria-controls={listboxId}
         aria-labelledby={labelId}
         disabled={disabled}
-        onClick={() => !disabled && value.length < maxSelection && setOpen((v) => !v)}
+        onClick={() =>
+          !disabled && value.length < maxSelection && setOpen((v) => !v)
+        }
         onKeyDown={handleTriggerKey}
         className={[
           "flex h-10 w-full items-center gap-2 rounded-lg border border-line bg-surface-card",
@@ -210,7 +212,7 @@ export function CountrySelect({
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search countries"
               aria-label="Search countries"
-              className="w-full rounded bg-transparent px-2 py-1.5 font-body text-sm text-ink outline-none placeholder:text-ink-tertiary"
+              className="w-full rounded bg-transparent px-2 py-1.5 font-body text-[16px] text-ink outline-none placeholder:text-ink-tertiary"
             />
           </div>
           <ul

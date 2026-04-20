@@ -40,9 +40,9 @@ const NAV_ITEMS = [
 
 function Sidebar() {
   return (
-    <aside className="flex w-[218px] shrink-0 flex-col bg-[#222125] text-[#f3f3f3]">
+    <aside className="flex w-14 pt-6 md:pt-0 md:w-[218px] shrink-0 flex-col bg-[#222125] text-[#f3f3f3]">
       {/* Logo */}
-      <div className="flex items-center justify-center px-8 pb-6 pt-[37px]">
+      <div className="hidden md:flex items-center justify-center px-8 pb-6 pt-[37px]">
         <img src="/images/logo.svg" />
       </div>
 
@@ -54,7 +54,7 @@ function Sidebar() {
             href="#"
             aria-current={active ? "page" : undefined}
             className={[
-              "flex h-10 items-center justify-between rounded-lg px-3 py-2 transition-colors",
+              "flex h-8 md:h-10 items-center justify-between rounded-lg px-2 md:px-3 py-2 transition-colors",
               active
                 ? "bg-[#5a5a5a] text-[#f8d237]"
                 : "text-[#f3f3f3] hover:bg-white/5",
@@ -62,12 +62,15 @@ function Sidebar() {
           >
             <span className="flex flex-1 items-center gap-3">
               <Icon className="size-4 shrink-0" aria-hidden />
-              <span className="text-base leading-[1.5] tracking-[0.025em]">
+              <span className="hidden md:block text-base leading-[1.5] tracking-[0.025em]">
                 {label}
               </span>
             </span>
             {collapsible ? (
-              <ChevronDown className="size-4 shrink-0 opacity-80" aria-hidden />
+              <ChevronDown
+                className="hidden md:block size-4 shrink-0 opacity-80"
+                aria-hidden
+              />
             ) : null}
           </a>
         ))}
@@ -82,7 +85,7 @@ function Sidebar() {
 
 function Header() {
   return (
-    <header className="flex h-[68px] items-center justify-between border-b border-[#cbcfd5] bg-white px-6 py-2">
+    <header className="flex h-[68px] items-center justify-between border-b border-[#cbcfd5] bg-white px-3 md:px-6 py-2">
       {/* Country selector */}
       <button
         type="button"
@@ -110,7 +113,7 @@ function Header() {
           <div className="flex size-[34px] items-center justify-center overflow-hidden rounded-full bg-[#cbcfd5] text-[#5a5a5a]">
             <UserIcon className="size-5" aria-hidden />
           </div>
-          <div className="flex flex-col items-start gap-1 pr-1">
+          <div className="hidden md:flex flex-col items-start gap-1 pr-1">
             <span className="text-sm leading-[1.4] text-[#1e1e1e]">
               Alex Johnson
             </span>
@@ -129,11 +132,7 @@ function Header() {
 /*  LAYOUT                                                                     */
 /* -------------------------------------------------------------------------- */
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen w-full bg-[#F6F7F9] text-[#1e1e1e]">
       <Sidebar />

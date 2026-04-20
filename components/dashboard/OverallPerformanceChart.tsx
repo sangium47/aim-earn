@@ -74,10 +74,10 @@ export function OverallPerformanceChart() {
   const rightLabels = ["60", "50", "40", "30", "20", "10", "0"];
 
   return (
-    <Card className="flex h-full flex-col gap-4 p-6">
+    <Card className="flex h-full flex-col gap-2 md:gap-4 p-3 md:p-6">
       <CardHeader title="Overall Performace" />
 
-      <div className="flex flex-1 flex-col gap-4">
+      <div className="flex flex-1 flex-col gap-2 md:gap-4">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="w-full"

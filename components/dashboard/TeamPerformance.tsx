@@ -10,10 +10,10 @@ const TEAM_PERFORMANCE = [
 
 export function TeamPerformance() {
   return (
-    <Card className="flex h-full flex-col gap-4 p-6">
+    <Card className="flex h-full flex-col gap-2 md:gap-4 p-3 md:p-6">
       <CardHeader title="Team Performance" />
 
-      <div className="grid flex-1 grid-cols-2 gap-4">
+      <div className="grid flex-1 md:grid-cols-2 gap-2 md:gap-4">
         {TEAM_PERFORMANCE.map(({ label, value, Icon }) => (
           <div
             key={label}

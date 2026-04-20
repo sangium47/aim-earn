@@ -24,7 +24,7 @@ function SelectPill({ options, defaultValue, onChange }: SelectPillProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex w-48 h-10 items-center justify-between gap-6 rounded-lg border border-[#cacaca] bg-white pl-4 pr-3 py-3 text-base font-medium tracking-[0.02em] text-[#222125] hover:border-[#b5b5b5] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b1610c] focus-visible:ring-offset-2"
+        className="inline-flex w-full md:w-48 h-10 items-center justify-between gap-6 rounded-lg border border-[#cacaca] bg-white pl-4 pr-3 py-3 text-base font-medium tracking-[0.02em] text-[#222125] hover:border-[#b5b5b5] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#b1610c] focus-visible:ring-offset-2"
       >
         <span>{selectedValue}</span>
         <ChevronDown
@@ -51,7 +51,9 @@ function SelectPill({ options, defaultValue, onChange }: SelectPillProps) {
 }
 
 export function TitleBar() {
-  const [selectedRole, setSelectedRole] = useState<"Distributor" | "Affiliate">("Distributor");
+  const [selectedRole, setSelectedRole] = useState<"Distributor" | "Affiliate">(
+    "Distributor",
+  );
 
   const handleRoleChange = (role: "Distributor" | "Affiliate") => {
     setSelectedRole(role);
@@ -62,15 +64,15 @@ export function TitleBar() {
     <section className="flex flex-col gap-4">
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="flex items-center">
-        <span className="px-1 py-0.5 text-base font-medium tracking-[0.02em] text-[#1e1e1e]">
+        <span className="py-0.5 text-base font-medium tracking-[0.02em] text-[#1e1e1e]">
           Dashboard
         </span>
       </nav>
 
       <div className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-4">
           {/* Title */}
-          <h1 className="flex-1 text-[32px] font-medium leading-[1.2] tracking-[0.01em] text-[#1e1e1e]">
+          <h1 className="flex-1 text-[24px] md:text-[32px] font-medium leading-[1.2] tracking-[0.01em] text-[#1e1e1e]">
             Dashboard
           </h1>
 
@@ -91,14 +93,14 @@ export function TitleBar() {
           <div
             role="tablist"
             aria-label="View as"
-            className="flex h-10 items-center gap-3 rounded-lg border border-[#e8e8e8] bg-white p-1"
+            className="flex h-10 items-center gap-2 rounded-lg border border-[#e8e8e8] bg-white p-1"
           >
             <button
               type="button"
               role="tab"
               aria-selected={selectedRole === "Distributor"}
               onClick={() => handleRoleChange("Distributor")}
-              className={`flex h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
+              className={`flex w-full h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
                 selectedRole === "Distributor"
                   ? "bg-[#222125] text-white shadow-[0_4px_10px_0_rgba(0,0,0,0.09)]"
                   : "text-[#1e1e1e] hover:bg-[#f5f5f5]"
@@ -111,7 +113,7 @@ export function TitleBar() {
               role="tab"
               aria-selected={selectedRole === "Affiliate"}
               onClick={() => handleRoleChange("Affiliate")}
-              className={`flex h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
+              className={`flex w-full h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
                 selectedRole === "Affiliate"
                   ? "bg-[#222125] text-white shadow-[0_4px_10px_0_rgba(0,0,0,0.09)]"
                   : "text-[#1e1e1e] hover:bg-[#f5f5f5]"
