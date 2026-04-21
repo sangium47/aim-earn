@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui";
+import { Dropdown } from "@/components/shared";
 import { CountryChip } from "./CountryChip";
 import { CountrySelect } from "./CountrySelect";
 import { COUNTRIES, findCountry, type Country } from "./countries";
 
-const MAX_SELECTION = 3;
+const DEFAULT_MAX_SELECTION = 3;
 
 export type SelectCountryFormProps = {
   /** Called with the selected ISO codes when the user clicks Continue. */
@@ -19,6 +20,8 @@ export type SelectCountryFormProps = {
   isSubmitting?: boolean;
   /** Override outer className. */
   className?: string;
+  /** Maximum number of countries the user may select. Defaults to 3. */
+  maxSelection?: number;
 };
 
 /**
@@ -38,8 +41,15 @@ export function SelectCountryForm({
   defaultValue = [],
   isSubmitting = false,
   className,
+  maxSelection = DEFAULT_MAX_SELECTION,
 }: SelectCountryFormProps) {
   const [selected, setSelected] = useState<string[]>(defaultValue);
+  const isSingleSelect = maxSelection === 1;
+
+  const dropdownOptions = useMemo(
+    () => countries.map((c) => ({ label: c.name, value: c.code })),
+    [countries],
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,8 +72,9 @@ export function SelectCountryForm({
             Select Country
           </h2>
           <p className="text-base font-medium leading-[1.4] tracking-figma text-ink-secondary">
-            Select all countries you operate in. (Maximum {MAX_SELECTION}{" "}
-            countries)
+            {isSingleSelect
+              ? "Select the country you operate in."
+              : `Select all countries you operate in. (Maximum ${maxSelection} countries)`}
           </p>
         </header>
 
@@ -75,25 +86,39 @@ export function SelectCountryForm({
         >
           <div className="flex w-full flex-col items-start gap-2">
             <div className="flex w-full flex-col gap-2">
-              <label
-                id="countries-label"
-                htmlFor="countries-select"
-                className="text-base font-medium leading-[1.4] tracking-figma text-ink"
-              >
-                Countries
-              </label>
-              <CountrySelect
-                id="countries-select"
-                labelId="countries-label"
-                maxSelection={MAX_SELECTION}
-                value={selected}
-                onChange={setSelected}
-                countries={countries}
-                disabled={isSubmitting}
-              />
+              {isSingleSelect ? (
+                <Dropdown
+                  label="Country"
+                  value={selected[0] ?? ""}
+                  onChange={(value) => setSelected(value ? [value] : [])}
+                  options={dropdownOptions}
+                  placeholder="Select Country"
+                  fullWidth
+                  disabled={isSubmitting}
+                />
+              ) : (
+                <>
+                  <label
+                    id="countries-label"
+                    htmlFor="countries-select"
+                    className="text-base font-medium leading-[1.4] tracking-figma text-ink"
+                  >
+                    Countries
+                  </label>
+                  <CountrySelect
+                    id="countries-select"
+                    labelId="countries-label"
+                    maxSelection={maxSelection}
+                    value={selected}
+                    onChange={setSelected}
+                    countries={countries}
+                    disabled={isSubmitting}
+                  />
+                </>
+              )}
             </div>
 
-            {selected.length > 0 ? (
+            {!isSingleSelect && selected.length > 0 ? (
               <div
                 className="flex w-full flex-wrap items-start gap-2 min-h-20"
                 aria-live="polite"
@@ -102,7 +127,20 @@ export function SelectCountryForm({
                 {selected.map((code) => {
                   const country = findCountry(code);
                   if (!country) return null;
-                  return <CountryChip key={code} label={country.name} />;
+                  return (
+                    <CountryChip
+                      key={code}
+                      label={country.name}
+                      onRemove={
+                        isSubmitting
+                          ? undefined
+                          : () =>
+                              setSelected((prev) =>
+                                prev.filter((c) => c !== code),
+                              )
+                      }
+                    />
+                  );
                 })}
               </div>
             ) : null}

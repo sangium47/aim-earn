@@ -1,8 +1,25 @@
+"use client";
+
+import { usePathname, useRouter } from "next/navigation";
+
 type BecomeDistributorHeroProps = {
   onApply?: () => void;
 };
 
 export function BecomeDistributorHero({ onApply }: BecomeDistributorHeroProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleApply = () => {
+    if (onApply) {
+      onApply();
+      return;
+    }
+    router.push(
+      `/register-distributor?page=${encodeURIComponent(pathname ?? "/")}`,
+    );
+  };
+
   return (
     <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-32 rounded-2xl md:rounded-3xl bg-[#2c2c2c] p-6 md:px-10 md:py-16 shadow-[0_3px_7.6px_0_rgba(12,12,13,0.03)]">
       <div className="flex min-w-0 flex-1 flex-col gap-3 md:gap-6">
@@ -17,7 +34,7 @@ export function BecomeDistributorHero({ onApply }: BecomeDistributorHeroProps) {
 
       <button
         type="button"
-        onClick={onApply}
+        onClick={handleApply}
         className="inline-flex h-10 md:h-auto w-full md:w-[154px] shrink-0 items-center justify-center gap-2 rounded-lg bg-white p-3 text-[15px] font-medium leading-none tracking-[0.02em] text-[#222125] hover:bg-[#f5f5f5]"
       >
         Apply Now
