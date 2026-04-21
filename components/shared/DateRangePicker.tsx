@@ -10,6 +10,7 @@ type DateRangePickerProps = {
   datePlaceholder?: string;
   dateValue?: DateRange;
   onDateClick?: (range: DateRange) => void;
+  disabled?: boolean;
 };
 
 function formatDate(value: string) {
@@ -32,6 +33,7 @@ export function DateRangePicker({
   datePlaceholder = "",
   dateValue,
   onDateClick,
+  disabled = false,
 }: DateRangePickerProps) {
   const fieldId = useId();
   const [open, setOpen] = useState(false);
@@ -78,7 +80,7 @@ export function DateRangePicker({
   return (
     <div
       ref={popoverRef}
-      className="relative flex w-full shrink-0 flex-col items-start gap-2 md:w-[275px]"
+      className="flex-none relative flex w-full shrink-0 flex-col items-start gap-2 md:w-[275px]"
     >
       {label ? (
         <label
@@ -92,9 +94,10 @@ export function DateRangePicker({
         id={fieldId}
         type="button"
         onClick={() => setOpen((o) => !o)}
+        disabled={disabled}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="flex h-10 w-full items-center gap-2 rounded-lg bg-[#f4f5f8] py-3 pl-4 pr-3 text-left text-[15px] leading-none transition-colors hover:bg-[#eceef2]"
+        className={`flex h-10 w-full items-center gap-2 rounded-lg bg-[#f4f5f8] py-3 pl-4 pr-3 text-left text-[15px] leading-none transition-colors hover:bg-[#eceef2] disabled:bg-[#e7e7e7] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-[#f4f5f8]`}
       >
         <CalendarIcon className="size-4 shrink-0 text-[#878787]" />
         <span

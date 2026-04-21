@@ -1,28 +1,154 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
   Bell,
+  Check,
   ChevronDown,
   HelpCircle,
   List,
   Mail,
   Menu,
-  Package,
   PieChart as PieIcon,
   Settings,
   ShoppingCart,
   Tag,
   User as UserIcon,
-  Users,
-  Wallet,
   X,
   type LucideIcon,
 } from "lucide-react";
+import { Dialog } from "@/components/shared";
+
+const LANGUAGES = [
+  { code: "en", label: "English" },
+  { code: "th", label: "ไทย" },
+] as const;
+
+type Notification = {
+  id: string;
+  title: string;
+  description: string;
+  /** Epoch ms when the notification was created. */
+  at: number;
+  unread: boolean;
+};
+
+const NOTIFICATIONS: Notification[] = [
+  {
+    id: "n-1",
+    title: "New affiliate joined",
+    description: "Sarah Chen just signed up with your invite link.",
+    at: Date.now() - 1000 * 60 * 5, // 5 min ago
+    unread: true,
+  },
+  {
+    id: "n-2",
+    title: "Payout approved",
+    description: "Your March payout of $1,820 is scheduled for 5 Apr.",
+    at: Date.now() - 1000 * 60 * 55, // 55 min ago
+    unread: true,
+  },
+  {
+    id: "n-3",
+    title: "Promotion under review",
+    description: "Spring Sale 20% Off is now awaiting admin approval.",
+    at: Date.now() - 1000 * 60 * 60 * 4, // 4 hours ago
+    unread: false,
+  },
+  {
+    id: "n-4",
+    title: "New order on your affiliate link",
+    description: "Theresa Webb placed a $15,200 order.",
+    at: Date.now() - 1000 * 60 * 60 * 26, // ~1 day ago
+    unread: false,
+  },
+];
+
+function renderNotifBody({
+  notifications,
+  setNotifications,
+  onClose,
+}: {
+  notifications: Notification[];
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-line">
+        <span className="text-[20px] md:text-[24px] font-semibold text-ink">
+          Notifications
+        </span>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close notifications"
+          className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[#5f5f5f] transition-colors hover:bg-[#f4f5f8] hover:text-[#222125]"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+      <ul className="max-h-[360px] overflow-y-auto py-1">
+        {notifications.length === 0 ? (
+          <li className="px-4 py-6 text-center text-sm text-ink-secondary">
+            No notifications
+          </li>
+        ) : (
+          notifications.map((n) => (
+            <li key={n.id}>
+              <button
+                type="button"
+                onClick={() =>
+                  setNotifications((prev) =>
+                    prev.map((x) =>
+                      x.id === n.id ? { ...x, unread: false } : x,
+                    ),
+                  )
+                }
+                className="relative flex w-full flex-col items-start gap-0.5 px-4 py-2 text-left transition-colors hover:bg-[#f4f5f8]"
+              >
+                <span className="text-[16px] text-ink">{n.title}</span>
+                <span className="text-[14px] leading-[1.4] text-ink-secondary">
+                  {n.description}
+                </span>
+                <span className="text-[11px] text-ink-tertiary">
+                  {fromNow(n.at)}
+                </span>
+                {n.unread ? (
+                  <span
+                    aria-label="Unread"
+                    className="absolute top-3 right-3 block size-2 rounded-full bg-[#ef4444]"
+                  />
+                ) : null}
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
+    </>
+  );
+}
+
+function fromNow(timestamp: number): string {
+  const diff = Math.max(0, Date.now() - timestamp);
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min} min ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 7) return `${day}d ago`;
+  const wk = Math.floor(day / 7);
+  if (wk < 4) return `${wk}w ago`;
+  const mo = Math.floor(day / 30);
+  if (mo < 12) return `${mo}mo ago`;
+  return `${Math.floor(day / 365)}y ago`;
+}
 
 /* -------------------------------------------------------------------------- */
 /*  DATA                                                                       */
@@ -254,6 +380,12 @@ function Sidebar({
 /*  HEADER                                                                     */
 /* -------------------------------------------------------------------------- */
 
+const COUNTRY_CHOICES = [
+  { code: "all", label: "All Country" },
+  { code: "SG", label: "Singapore" },
+  { code: "TH", label: "Thailand" },
+] as const;
+
 function Header({
   mobileOpen,
   onToggleSidebar,
@@ -261,6 +393,95 @@ function Header({
   mobileOpen: boolean;
   onToggleSidebar: () => void;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [lang, setLang] = useState<(typeof LANGUAGES)[number]["code"]>("en");
+  const [langDialogOpen, setLangDialogOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const [country, setCountry] =
+    useState<(typeof COUNTRY_CHOICES)[number]["code"]>("all");
+  const [countryOpen, setCountryOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
+  const countryRef = useRef<HTMLDivElement>(null);
+
+  const currentLang = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
+  const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const isDashboard = pathname === "/distributor/dashboard";
+  const countryOptions = isDashboard
+    ? COUNTRY_CHOICES
+    : COUNTRY_CHOICES.filter((c) => c.code !== "all");
+
+  // If we navigate away from the dashboard while "All" is selected,
+  // fall back to the first available country.
+  useEffect(() => {
+    if (country === "all" && !isDashboard) {
+      setCountry(countryOptions[0]?.code ?? "SG");
+    }
+  }, [country, isDashboard, countryOptions]);
+
+  const currentCountry =
+    countryOptions.find((c) => c.code === country) ?? countryOptions[0];
+
+  useEffect(() => {
+    if (!profileOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!profileRef.current) return;
+      if (!profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setProfileOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [profileOpen]);
+
+  useEffect(() => {
+    if (!countryOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!countryRef.current) return;
+      if (!countryRef.current.contains(e.target as Node)) setCountryOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setCountryOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [countryOpen]);
+
+  useEffect(() => {
+    if (!notifOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!notifRef.current) return;
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      if (notifRef.current.contains(target)) return;
+      // Ignore clicks inside the mobile Dialog — it has its own backdrop close.
+      if (target.closest('[role="dialog"]')) return;
+      setNotifOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setNotifOpen(false);
+    };
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [notifOpen]);
+
   return (
     <header className="flex h-[68px] items-center justify-between border-b border-[#cbcfd5] bg-white px-3 md:px-6 py-2">
       <div className="flex items-center gap-2 md:gap-4">
@@ -275,44 +496,220 @@ function Header({
         </button>
 
         {/* Country selector */}
-        <button
-          type="button"
-          className="inline-flex items-center gap-2 rounded-lg bg-[#f5f5f8] px-3 py-2 text-sm text-[#1e1e1e] hover:bg-[#ececf0]"
-        >
-          <span>All Country</span>
-          <ChevronDown className="size-4" />
-        </button>
+        <div ref={countryRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setCountryOpen((o) => !o)}
+            aria-haspopup="listbox"
+            aria-expanded={countryOpen}
+            className="inline-flex items-center gap-2 rounded-lg bg-[#f5f5f8] px-3 py-2 text-sm text-[#1e1e1e] hover:bg-[#ececf0]"
+          >
+            <span>{currentCountry?.label ?? "All Country"}</span>
+            <ChevronDown
+              className={`size-4 transition-transform ${countryOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {countryOpen ? (
+            <ul
+              role="listbox"
+              className="absolute left-0 top-full z-20 mt-2 w-[160px] overflow-hidden rounded-xl border border-line bg-white p-1 shadow-lg"
+            >
+              {countryOptions.map((opt) => {
+                const selected = opt.code === country;
+                return (
+                  <li key={opt.code}>
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      onClick={() => {
+                        setCountry(opt.code);
+                        setCountryOpen(false);
+                      }}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
+                        selected
+                          ? "bg-[#f8d237]/15 text-ink"
+                          : "text-ink hover:bg-[#f4f5f8]"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {selected ? (
+                        <Check className="size-4 text-[#1f7a3b]" aria-hidden />
+                      ) : null}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : null}
+        </div>
       </div>
 
       {/* Right cluster */}
       <div className="flex items-center gap-4">
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex size-5 items-center justify-center text-[#1e1e1e] hover:text-black"
+        <div ref={notifRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setNotifOpen((o) => !o)}
+            aria-haspopup="menu"
+            aria-expanded={notifOpen}
+            aria-label="Notifications"
+            className="relative flex size-8 items-center justify-center rounded-lg text-[#1e1e1e] hover:bg-[#f5f5f8]"
+          >
+            <Bell className="size-5" />
+            {unreadCount > 0 ? (
+              <span
+                aria-hidden
+                className="absolute top-1 right-1 block size-2 rounded-full bg-[#ef4444] ring-2 ring-white"
+              />
+            ) : null}
+          </button>
+
+          {notifOpen ? (
+            <div
+              role="menu"
+              className="hidden md:block absolute right-0 top-full z-20 mt-2 w-[340px] max-h-[420px] overflow-hidden rounded-xl border border-line bg-white shadow-lg"
+            >
+              {renderNotifBody({
+                notifications,
+                setNotifications,
+                onClose: () => setNotifOpen(false),
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        <Dialog
+          open={notifOpen}
+          width="max-w-sm"
+          onClose={() => setNotifOpen(false)}
         >
-          <Bell className="size-5" />
-        </button>
+          <div className="md:hidden">
+            {renderNotifBody({
+              notifications,
+              setNotifications,
+              onClose: () => setNotifOpen(false),
+            })}
+          </div>
+        </Dialog>
         <div aria-hidden className="h-6 w-px bg-[#cbcfd5]" />
         {/* Profile */}
-        <button
-          type="button"
-          className="flex items-center gap-3 rounded-lg pr-1 hover:bg-[#f5f5f5]"
-        >
-          <div className="flex size-[34px] items-center justify-center overflow-hidden rounded-full bg-[#cbcfd5] text-[#5a5a5a]">
-            <UserIcon className="size-5" aria-hidden />
-          </div>
-          <div className="hidden md:flex flex-col items-start gap-1 pr-1">
-            <span className="text-sm leading-[1.4] text-[#1e1e1e]">
-              Alex Johnson
-            </span>
-            <span className="text-xs leading-none text-[#757575]">
-              Distributor
-            </span>
-          </div>
-          <ChevronDown className="size-4 text-[#1e1e1e]" />
-        </button>
+        <div ref={profileRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setProfileOpen((o) => !o)}
+            aria-haspopup="menu"
+            aria-expanded={profileOpen}
+            className="flex items-center gap-3 rounded-lg pr-1 hover:bg-[#f5f5f5]"
+          >
+            <div className="flex size-[34px] items-center justify-center overflow-hidden rounded-full bg-[#cbcfd5] text-[#5a5a5a]">
+              <UserIcon className="size-5" aria-hidden />
+            </div>
+            <div className="hidden md:flex flex-col items-start gap-1 pr-1">
+              <span className="text-sm leading-[1.4] text-[#1e1e1e]">
+                Alex Johnson
+              </span>
+              <span className="text-xs leading-none text-[#757575]">
+                Distributor
+              </span>
+            </div>
+            <ChevronDown
+              className={`size-4 text-[#1e1e1e] transition-transform ${profileOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {profileOpen ? (
+            <ul
+              role="menu"
+              className="absolute right-0 top-full z-20 mt-2 w-[180px] overflow-hidden rounded-xl border border-line bg-white p-1 shadow-lg"
+            >
+              <li>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    router.push("/distributor/profile");
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#f4f5f8]"
+                >
+                  Profile
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setLangDialogOpen(true);
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 pt-2 pb-3 text-left text-sm text-ink transition-colors hover:bg-[#f4f5f8]"
+                >
+                  <span className="flex flex-1 flex-col items-start">
+                    <span>Languages</span>
+                    <span className="text-[11px] leading-none text-ink-secondary">
+                      {currentLang.label}
+                    </span>
+                  </span>
+                </button>
+              </li>
+              <li className="border-t border-line">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    router.push("/login");
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#f4f5f8]"
+                >
+                  Logout
+                </button>
+              </li>
+            </ul>
+          ) : null}
+        </div>
       </div>
+
+      <Dialog
+        open={langDialogOpen}
+        width="max-w-xs"
+        onClose={() => setLangDialogOpen(false)}
+      >
+        <div className="flex flex-col gap-3 py-4 md:py-6">
+          <h2 className="text-[18px] md:text-[20px] font-medium border-b border-line pb-4 leading-[1.2] tracking-[0.02em] text-[#1e1e1e] px-4 md:px-6">
+            Languages
+          </h2>
+          <ul role="radiogroup" className="flex flex-col gap-1 px-4 md:px-6">
+            {LANGUAGES.map((l) => {
+              const selected = l.code === lang;
+              return (
+                <li key={l.code}>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => {
+                      setLang(l.code);
+                      setLangDialogOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-lg py-2 text-left text-base transition-colors ${
+                      selected ? " text-ink" : "text-ink hover:bg-[#f4f5f8]"
+                    }`}
+                  >
+                    <span>{l.label}</span>
+                    {selected ? (
+                      <Check className="size-4 text-[#1f7a3b]" aria-hidden />
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </Dialog>
     </header>
   );
 }
@@ -332,12 +729,17 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       />
 
       {/* Right side */}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative flex min-w-0 flex-1 flex-col">
         <Header
           mobileOpen={mobileOpen}
           onToggleSidebar={() => setMobileOpen((v) => !v)}
         />
-        <div className={`${!mobileOpen ? "block" : "hidden"} md:block`}>
+        <div
+          className={`${!mobileOpen ? "block overflow-y-auto" : "hidden"} md:block md:overflow-y-auto`}
+          style={{
+            maxHeight: "calc(100vh - 68px)",
+          }}
+        >
           {children}
         </div>
       </div>

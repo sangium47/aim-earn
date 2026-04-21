@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { CheckCircleIcon } from "./icons";
+import { CheckCircleIcon } from "@/components/icons";
 
 export type ConfirmationScreenProps = {
   /** Main heading. Defaults to the Figma source's copy. */

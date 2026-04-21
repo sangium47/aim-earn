@@ -9,7 +9,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
-import { ChevronDownIcon } from "./icons";
+import { ChevronDownIcon } from "@/components/icons";
 import { COUNTRIES, type Country } from "./countries";
 
 export type CountrySelectProps = {

@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Button } from "@/components/shared/Button";
+import { ChevronDownIcon } from "../icons";
 
 export type EmailTemplate = {
   id: string;
@@ -100,18 +101,7 @@ export function SendEmail({
               ))}
             </select>
             {/* Custom chevron — appearance-none hides the native one */}
-            <svg
-              className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[#222125]"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m4 6 4 4 4-4" />
-            </svg>
+            <ChevronDownIcon className="absolute right-0 top-1 -translate-x-1/2 translate-y-1/2" />
           </div>
         </div>
       </div>

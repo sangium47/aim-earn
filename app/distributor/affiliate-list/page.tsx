@@ -7,17 +7,18 @@ import {
   Button,
   Card,
   Dialog,
+  FilterBar,
   PageTitle,
+  ReferalUrlCard,
   StatCard,
   Table,
+  type DateRange,
   type TableColumn,
 } from "@/components/shared";
-
-import { AffiliateUrlCard } from "@/components/affiliate-list/AffiliateUrlCard";
 import {
-  FilterBar,
-  type DateRange,
-} from "@/components/affiliate-list/FilterBar";
+  SendEmail,
+  type EmailTemplate,
+} from "@/components/affiliate-list/SendEmail";
 
 type Affiliate = {
   id: string;
@@ -193,7 +194,7 @@ export default function AffiliatePage() {
           </>
         }
       />
-      <AffiliateUrlCard url={affiliateUrl} />
+      <ReferalUrlCard label="Affiliate URL" url={affiliateUrl} />
       <FilterBar
         searchValue={search}
         searchPlaceholder="Search by name or email..."
@@ -237,7 +238,25 @@ export default function AffiliatePage() {
         selectable
       />
 
-      <Dialog open={emailOpen} onClose={() => setEmailOpen(false)} />
+      <Dialog
+        width="max-w-lg"
+        open={emailOpen}
+        onClose={() => setEmailOpen(false)}
+      >
+        <SendEmail
+          recipientCount={56}
+          templates={templates}
+          onCancel={() => setEmailOpen(false)}
+          onSend={() => setEmailOpen(false)}
+        />
+      </Dialog>
     </main>
   );
 }
+
+const templates: EmailTemplate[] = [
+  { id: "welcome", name: "Welcome & Onboarding" },
+  { id: "promo-spring", name: "Spring Promotion" },
+  { id: "monthly-digest", name: "Monthly Newsletter Digest" },
+  { id: "cart-abandon", name: "Abandoned Cart Reminder" },
+];

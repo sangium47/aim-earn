@@ -6,8 +6,10 @@ import {
   Breadcrumb,
   Button,
   Dialog,
+  FilterBar,
   PageTitle,
   Table,
+  type DateRange,
   type TableColumn,
 } from "@/components/shared";
 
@@ -15,11 +17,6 @@ import {
   SendEmail,
   type EmailTemplate,
 } from "@/components/affiliate-list/SendEmail";
-
-import {
-  FilterBar,
-  type DateRange,
-} from "@/components/affiliate-list/FilterBar";
 
 type Affiliate = {
   id: string;

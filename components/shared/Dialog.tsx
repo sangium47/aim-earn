@@ -34,7 +34,7 @@ export function Dialog({
       onClick={onClose}
     >
       <div
-        className={`min-h-[240px] w-full ${width} rounded-2xl bg-white shadow-xl ${className}`}
+        className={`w-full ${width} rounded-2xl bg-white shadow-xl ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

@@ -70,14 +70,16 @@ export default function LoginPage() {
 
   if (loginState === "country") {
     return (
-      <SelectCountryForm
-        defaultValue={[]}
-        onSubmit={() => {
-          redirect(
-            `/confirmation?email=${encodeURIComponent(user?.email || "admin@aimearn.com")}`,
-          );
-        }}
-      />
+      <main className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 lg:p-8 bg-white min-h-screen items-center justify-center">
+        <SelectCountryForm
+          defaultValue={[]}
+          onSubmit={() => {
+            redirect(
+              `/confirmation?email=${encodeURIComponent(user?.email || "admin@aimearn.com")}`,
+            );
+          }}
+        />
+      </main>
     );
   }
 
@@ -87,7 +89,6 @@ export default function LoginPage() {
         <RegistrationForm
           onSubmit={handleSubmit}
           onGoogleSignIn={() => handleSocialSignIn("Google")}
-          onFacebookSignIn={() => handleSocialSignIn("Facebook")}
           onAppleSignIn={() => handleSocialSignIn("Apple")}
           isSubmitting={isSubmitting}
         />

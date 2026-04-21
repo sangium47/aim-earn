@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { InputField } from "./InputField";
 import { SocialButton } from "./SocialButton";
-import { AppleIcon, FacebookIcon, GoogleIcon } from "./icons";
+import { AppleIcon, GoogleIcon } from "@/components/icons";
 
 export type RegistrationValues = {
   email: string;
@@ -14,8 +14,6 @@ export type RegistrationFormProps = {
   onSubmit?: (values: RegistrationValues) => void | Promise<void>;
   /** Called when the user clicks "Continue with Gmail". */
   onGoogleSignIn?: () => void;
-  /** Called when the user clicks "Continue with Facebook". */
-  onFacebookSignIn?: () => void;
   /** Called when the user clicks "Continue with Apple ID". */
   onAppleSignIn?: () => void;
   /** Disables the primary submit button and shows pending state. */
@@ -36,7 +34,6 @@ export type RegistrationFormProps = {
 export function RegistrationForm({
   onSubmit,
   onGoogleSignIn,
-  onFacebookSignIn,
   onAppleSignIn,
   isSubmitting = false,
   className,
@@ -113,13 +110,6 @@ export function RegistrationForm({
               aria-label="Continue with Gmail"
             >
               Continue with Gmail
-            </SocialButton>
-            <SocialButton
-              icon={<FacebookIcon className="h-6 w-6" />}
-              onClick={onFacebookSignIn}
-              aria-label="Continue with Facebook"
-            >
-              Continue with Facebook
             </SocialButton>
             <SocialButton
               icon={<AppleIcon className="h-[22px] w-[22px] text-black" />}

@@ -47,15 +47,12 @@ export function SelectCountryForm({
     await onSubmit?.(selected);
   };
 
-  const removeOne = (code: string) =>
-    setSelected((prev) => prev.filter((c) => c !== code));
-
   return (
     <section
       className={["w-full bg-surface-card", className ?? ""].join(" ")}
       aria-labelledby="select-country-heading"
     >
-      <div className="flex min-h-[840px] flex-col items-center justify-center gap-8 px-6 pb-24 pt-8">
+      <div className="flex flex-col items-center justify-center gap-8">
         {/* Heading */}
         <header className="flex h-14 w-full flex-col items-center justify-center gap-2 text-center">
           <h2
@@ -105,27 +102,22 @@ export function SelectCountryForm({
                 {selected.map((code) => {
                   const country = findCountry(code);
                   if (!country) return null;
-                  return (
-                    <CountryChip
-                      key={code}
-                      label={country.name}
-                      disabled={isSubmitting}
-                      onRemove={() => removeOne(code)}
-                    />
-                  );
+                  return <CountryChip key={code} label={country.name} />;
                 })}
               </div>
             ) : null}
           </div>
 
-          <Button
-            type="submit"
-            variant="brand"
-            size="md"
-            disabled={selected.length === 0 || isSubmitting}
-          >
-            {isSubmitting ? "Saving…" : "Continue"}
-          </Button>
+          {onSubmit ? (
+            <Button
+              type="submit"
+              variant="brand"
+              size="md"
+              disabled={selected.length === 0 || isSubmitting}
+            >
+              {isSubmitting ? "Saving…" : "Continue"}
+            </Button>
+          ) : null}
         </form>
       </div>
     </section>
