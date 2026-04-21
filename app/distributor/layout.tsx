@@ -11,6 +11,7 @@ import {
   HelpCircle,
   List,
   Mail,
+  Menu,
   Package,
   PieChart as PieIcon,
   Settings,
@@ -19,6 +20,7 @@ import {
   User as UserIcon,
   Users,
   Wallet,
+  X,
   type LucideIcon,
 } from "lucide-react";
 
@@ -26,7 +28,7 @@ import {
 /*  DATA                                                                       */
 /* -------------------------------------------------------------------------- */
 
-type NavChild = { label: string; short: string; href: string };
+type NavChild = { label: string; href: string };
 
 type NavItem = {
   label: string;
@@ -43,14 +45,9 @@ const NAV_ITEMS: NavItem[] = [
     Icon: List,
     collapsible: true,
     children: [
-      {
-        label: "Own Affiliates",
-        short: "OA",
-        href: "/distributor/affiliate-list",
-      },
+      { label: "Own Affiliates", href: "/distributor/affiliate-list" },
       {
         label: "Inactive Affiliates",
-        short: "IA",
         href: "/distributor/inactive-affiliate-list",
       },
     ],
@@ -60,12 +57,8 @@ const NAV_ITEMS: NavItem[] = [
     Icon: Tag,
     collapsible: true,
     children: [
-      { label: "Products", short: "PR", href: "/distributor/products" },
-      {
-        label: "Promotions",
-        short: "PM",
-        href: "/distributor/products/promotions",
-      },
+      { label: "Products", href: "/distributor/products" },
+      { label: "Promotions", href: "/distributor/products/promotions" },
     ],
   },
   {
@@ -73,16 +66,8 @@ const NAV_ITEMS: NavItem[] = [
     Icon: ShoppingCart,
     collapsible: true,
     children: [
-      {
-        label: "Direct Orders",
-        short: "DO",
-        href: "/distributor/orders/direct",
-      },
-      {
-        label: "Affiliate Orders",
-        short: "AO",
-        href: "/distributor/orders/affiliate",
-      },
+      { label: "Direct Orders", href: "/distributor/orders/direct" },
+      { label: "Affiliate Orders", href: "/distributor/orders/affiliate" },
     ],
   },
   {
@@ -90,14 +75,9 @@ const NAV_ITEMS: NavItem[] = [
     Icon: UserIcon,
     collapsible: true,
     children: [
-      {
-        label: "Direct Customers",
-        short: "DC",
-        href: "/distributor/customers/direct",
-      },
+      { label: "Direct Customers", href: "/distributor/customers/direct" },
       {
         label: "Affiliate Customers",
-        short: "AC",
         href: "/distributor/customers/affiliate",
       },
     ],
@@ -108,8 +88,8 @@ const NAV_ITEMS: NavItem[] = [
     Icon: BarChart3,
     collapsible: true,
     children: [
-      { label: "Sales", short: "SL", href: "/distributor/reports/sales" },
-      { label: "Payout", short: "PO", href: "/distributor/reports/payout" },
+      { label: "Sales", href: "/distributor/reports/sales" },
+      { label: "Payout", href: "/distributor/reports/payout" },
     ],
   },
   { label: "Support", Icon: HelpCircle, href: "/distributor/support" },
@@ -118,9 +98,9 @@ const NAV_ITEMS: NavItem[] = [
     Icon: Settings,
     collapsible: true,
     children: [
-      { label: "Bank Account", short: "BA", href: "/distributor/setting/bank" },
-      { label: "Reminder", short: "RM", href: "/distributor/setting/reminder" },
-      { label: "Country", short: "CT", href: "/distributor/setting/country" },
+      { label: "Bank Account", href: "/distributor/setting/bank" },
+      { label: "Reminder", href: "/distributor/setting/reminder" },
+      { label: "Country", href: "/distributor/setting/country" },
     ],
   },
 ];
@@ -129,7 +109,13 @@ const NAV_ITEMS: NavItem[] = [
 /*  SIDEBAR                                                                    */
 /* -------------------------------------------------------------------------- */
 
-function Sidebar() {
+function Sidebar({
+  mobileOpen,
+  onToggleSidebar,
+}: {
+  mobileOpen: boolean;
+  onToggleSidebar: () => void;
+}) {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState<string | null>(() => {
     const match = NAV_ITEMS.find(
@@ -150,15 +136,39 @@ function Sidebar() {
       active ? "bg-[#5a5a5a] text-brand" : "text-[#f3f3f3] hover:bg-white/5",
     ].join(" ");
 
+  // Mobile-expanded visibility helpers so we can reuse the md+ styles.
+  const mdLabelClass = mobileOpen ? "block" : "hidden md:block";
+
+  const closeOnMobile = () => {
+    if (mobileOpen) onToggleSidebar();
+  };
+
   return (
-    <aside className="flex w-14 pt-6 md:pt-0 md:w-[218px] shrink-0 flex-col bg-[#222125] text-[#f3f3f3]">
+    <aside
+      className={`flex shrink-0 flex-col bg-[#222125] text-[#f3f3f3] transition-[width] duration-200 md:pt-0 md:w-[218px] ${mobileOpen ? "w-full pt-0" : "w-0 pt-6"}`}
+    >
       {/* Logo */}
-      <div className="hidden md:flex items-center justify-center px-8 pt-6">
-        <img src="/images/logo.svg" />
+      <div
+        className={`${mobileOpen ? "flex" : "hidden"} md:flex items-start md:items-center justify-between md:justify-center px-4 md:px-8 pt-3 md:pt-6`}
+      >
+        <img src="/images/logo.svg" className="w-auto h-[36px] md:h-[60px]" />
+        {/* Mobile close */}
+        {mobileOpen ? (
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            aria-label="Close sidebar"
+            className="md:hidden flex size-10 items-start justify-end self-start rounded-lg text-[#f3f3f3] hover:bg-white/10"
+          >
+            <X className="size-5" />
+          </button>
+        ) : null}
       </div>
 
       {/* Nav */}
-      <nav className="sticky top-0 pt-3 flex flex-col gap-1 px-3">
+      <nav
+        className={`${mobileOpen ? "flex" : "hidden md:flex"} sticky top-0 pt-3 flex-col gap-1 px-3`}
+      >
         {NAV_ITEMS.map((item) => {
           const { label, Icon, href, collapsible, children } = item;
           const active = isActive(href);
@@ -170,13 +180,15 @@ function Sidebar() {
             <>
               <span className="flex flex-1 items-center gap-3">
                 <Icon className="size-4 shrink-0" aria-hidden />
-                <span className="hidden md:block text-base leading-[1.5] tracking-[0.025em]">
+                <span
+                  className={`${mdLabelClass} text-base leading-[1.5] tracking-[0.025em]`}
+                >
                   {label}
                 </span>
               </span>
               {collapsible ? (
                 <ChevronDown
-                  className={`hidden md:block size-4 shrink-0 opacity-80 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                  className={`${mdLabelClass} size-4 shrink-0 opacity-80 transition-transform ${isOpen ? "rotate-180" : ""}`}
                   aria-hidden
                 />
               ) : null}
@@ -198,6 +210,7 @@ function Sidebar() {
               ) : (
                 <Link
                   href={href ?? "#"}
+                  onClick={closeOnMobile}
                   aria-current={active ? "page" : undefined}
                   className={itemClass(active)}
                 >
@@ -213,20 +226,16 @@ function Sidebar() {
                       <li key={child.href}>
                         <Link
                           href={child.href}
+                          onClick={closeOnMobile}
                           aria-current={childIsActive ? "page" : undefined}
                           className={[
-                            "flex h-[40px] items-center justify-center md:justify-start rounded-md md:pl-9 md:px-3 text-sm leading-[1.4] tracking-[0.025em] transition-colors",
+                            "flex h-[40px] items-center justify-start rounded-md pl-9 pr-3 text-sm leading-[1.4] tracking-[0.025em] transition-colors",
                             childIsActive
                               ? "bg-ink-secondary/30 text-brand"
                               : "text-surface-input hover:bg-white/5 hover:text-[#f3f3f3]",
                           ].join(" ")}
                         >
-                          <span className="md:hidden font-semibold">
-                            {child.short}
-                          </span>
-                          <span className="hidden md:inline">
-                            {child.label}
-                          </span>
+                          {child.label}
                         </Link>
                       </li>
                     );
@@ -245,17 +254,35 @@ function Sidebar() {
 /*  HEADER                                                                     */
 /* -------------------------------------------------------------------------- */
 
-function Header() {
+function Header({
+  mobileOpen,
+  onToggleSidebar,
+}: {
+  mobileOpen: boolean;
+  onToggleSidebar: () => void;
+}) {
   return (
     <header className="flex h-[68px] items-center justify-between border-b border-[#cbcfd5] bg-white px-3 md:px-6 py-2">
-      {/* Country selector */}
-      <button
-        type="button"
-        className="inline-flex items-center gap-2 rounded-lg bg-[#f5f5f8] px-3 py-2 text-sm text-[#1e1e1e] hover:bg-[#ececf0]"
-      >
-        <span>All Country</span>
-        <ChevronDown className="size-4" />
-      </button>
+      <div className="flex items-center gap-2 md:gap-4">
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          aria-label={mobileOpen ? "Collapse sidebar" : "Expand sidebar"}
+          aria-expanded={mobileOpen}
+          className="md:hidden inline-flex size-10 items-center justify-center rounded-lg text-[#1e1e1e] hover:bg-[#f5f5f8]"
+        >
+          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+        </button>
+
+        {/* Country selector */}
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#f5f5f8] px-3 py-2 text-sm text-[#1e1e1e] hover:bg-[#ececf0]"
+        >
+          <span>All Country</span>
+          <ChevronDown className="size-4" />
+        </button>
+      </div>
 
       {/* Right cluster */}
       <div className="flex items-center gap-4">
@@ -295,14 +322,24 @@ function Header() {
 /* -------------------------------------------------------------------------- */
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen w-full bg-[#F6F7F9] text-[#1e1e1e]">
-      <Sidebar />
+      <Sidebar
+        mobileOpen={mobileOpen}
+        onToggleSidebar={() => setMobileOpen((v) => !v)}
+      />
 
       {/* Right side */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <Header />
-        {children}
+        <Header
+          mobileOpen={mobileOpen}
+          onToggleSidebar={() => setMobileOpen((v) => !v)}
+        />
+        <div className={`${!mobileOpen ? "block" : "hidden"} md:block`}>
+          {children}
+        </div>
       </div>
     </div>
   );
