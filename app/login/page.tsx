@@ -5,12 +5,10 @@ import {
   RegistrationForm,
   type RegistrationValues,
 } from "@/components/registration-form";
-import { SelectCountryForm } from "@/components/select-country-form";
 import { OtpForm } from "@/components/otp-form";
-import { ConfirmationScreen } from "@/components/confirmation-screen";
 import { redirect } from "next/navigation";
 
-type LoginState = "login" | "otp" | "country" | "confirm";
+type LoginState = "login" | "otp";
 
 type User = {
   email: string;
@@ -51,35 +49,15 @@ export default function LoginPage() {
     setLoginState("otp");
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setLoginState("login");
-  };
-
   if (loginState === "otp") {
     return (
       <OtpForm
         onBack={() => setLoginState("login")}
         autoSubmit
         onSubmit={() => {
-          setLoginState("country");
+          redirect("/distributor");
         }}
       />
-    );
-  }
-
-  if (loginState === "country") {
-    return (
-      <main className="flex flex-col gap-4 md:gap-6 p-4 md:p-6 lg:p-8 bg-white min-h-screen items-center justify-center">
-        <SelectCountryForm
-          defaultValue={[]}
-          onSubmit={() => {
-            redirect(
-              `/confirmation?email=${encodeURIComponent(user?.email || "admin@aimearn.com")}`,
-            );
-          }}
-        />
-      </main>
     );
   }
 
