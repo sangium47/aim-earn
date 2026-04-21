@@ -10,6 +10,10 @@ type PromotionsListProps = {
   /** Position of the Add button. Defaults to "top" to match Figma. */
   addButtonPosition?: "top" | "bottom";
   emptyState?: React.ReactNode;
+  /** When false, hides the "Add Promotion" button. Defaults to true. */
+  canAdd?: boolean;
+  /** When false, hides the delete button on each promotion row. Defaults to true. */
+  canRemove?: boolean;
 };
 
 /**
@@ -23,13 +27,15 @@ export function PromotionsList({
   promotions,
   addButtonPosition = "top",
   emptyState,
+  canAdd = true,
+  canRemove = true,
 }: PromotionsListProps) {
   const [addOpen, setAddOpen] = useState(false);
 
   const onAdd = () => setAddOpen(true);
   const onDelete = () => {};
 
-  const addButton = <AddPromotionButton onClick={onAdd} />;
+  const addButton = canAdd ? <AddPromotionButton onClick={onAdd} /> : null;
 
   return (
     <div className="flex flex-col gap-4">
@@ -40,17 +46,19 @@ export function PromotionsList({
             <PromotionRow
               key={promotion.id}
               promotion={promotion}
-              onDelete={onDelete}
+              onDelete={canRemove ? onDelete : undefined}
             />
           ))}
 
       {addButtonPosition === "bottom" && addButton}
 
-      <AddPromotionDialog
-        open={addOpen}
-        onClose={() => setAddOpen(false)}
-        promotions={promotions}
-      />
+      {canAdd && (
+        <AddPromotionDialog
+          open={addOpen}
+          onClose={() => setAddOpen(false)}
+          promotions={promotions}
+        />
+      )}
     </div>
   );
 }

@@ -13,6 +13,10 @@ type TabKey = "commission" | "promotion" | "media";
 type CommissionSectionProps = {
   commissions: CountryCommission[];
   promotions?: any[] | null | undefined;
+  /** When false, hides the "Add Promotion" button. Defaults to true. */
+  canAdd?: boolean;
+  /** When false, hides the delete button on each promotion row. Defaults to true. */
+  canRemove?: boolean;
 };
 
 /**
@@ -23,6 +27,8 @@ type CommissionSectionProps = {
 export function CommissionSection({
   commissions,
   promotions,
+  canAdd = true,
+  canRemove = true,
 }: CommissionSectionProps) {
   const [tab, setTab] = useState<TabKey>("commission");
 
@@ -47,7 +53,11 @@ export function CommissionSection({
 
       {tab === "promotion" && (
         <div className="flex flex-col gap-4">
-          <PromotionsList promotions={promotions || []} />
+          <PromotionsList
+            promotions={promotions || []}
+            canAdd={canAdd}
+            canRemove={canRemove}
+          />
         </div>
       )}
     </div>

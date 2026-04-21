@@ -1,5 +1,6 @@
 export * from "../shared";
 export { TitleBar } from "./TitleBar";
+export { BecomeDistributorBanner } from "./BecomeDistributorBanner";
 export { MyPerformance } from "./MyPerformance";
 export { TeamPerformance } from "./TeamPerformance";
 export { OverallPerformanceChart } from "./OverallPerformanceChart";

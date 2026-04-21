@@ -22,3 +22,4 @@ export { Switch } from "./Switch";
 export { FilterBar } from "./FilterBar";
 export { Dropdown } from "./Dropdown";
 export type { DropdownOption } from "./Dropdown";
+export { BecomeDistributorHero } from "./BecomeDistributorHero";
