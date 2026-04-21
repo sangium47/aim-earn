@@ -26,7 +26,7 @@ import {
 /*  DATA                                                                       */
 /* -------------------------------------------------------------------------- */
 
-type NavChild = { label: string; href: string };
+type NavChild = { label: string; short: string; href: string };
 
 type NavItem = {
   label: string;
@@ -43,9 +43,14 @@ const NAV_ITEMS: NavItem[] = [
     Icon: List,
     collapsible: true,
     children: [
-      { label: "Own Affiliates", href: "/distributor/affiliate-list" },
+      {
+        label: "Own Affiliates",
+        short: "OA",
+        href: "/distributor/affiliate-list",
+      },
       {
         label: "Inactive Affiliates",
+        short: "IA",
         href: "/distributor/inactive-affiliate-list",
       },
     ],
@@ -55,8 +60,12 @@ const NAV_ITEMS: NavItem[] = [
     Icon: Tag,
     collapsible: true,
     children: [
-      { label: "Products", href: "/distributor/products" },
-      { label: "Promotions", href: "/distributor/products/promotions" },
+      { label: "Products", short: "PR", href: "/distributor/products" },
+      {
+        label: "Promotions",
+        short: "PM",
+        href: "/distributor/products/promotions",
+      },
     ],
   },
   {
@@ -64,8 +73,16 @@ const NAV_ITEMS: NavItem[] = [
     Icon: ShoppingCart,
     collapsible: true,
     children: [
-      { label: "Direct Orders", href: "/distributor/orders/direct" },
-      { label: "Affiliate Orders", href: "/distributor/orders/affiliate" },
+      {
+        label: "Direct Orders",
+        short: "DO",
+        href: "/distributor/orders/direct",
+      },
+      {
+        label: "Affiliate Orders",
+        short: "AO",
+        href: "/distributor/orders/affiliate",
+      },
     ],
   },
   {
@@ -73,9 +90,14 @@ const NAV_ITEMS: NavItem[] = [
     Icon: UserIcon,
     collapsible: true,
     children: [
-      { label: "Direct Customers", href: "/distributor/customers/direct" },
+      {
+        label: "Direct Customers",
+        short: "DC",
+        href: "/distributor/customers/direct",
+      },
       {
         label: "Affiliate Customers",
+        short: "AC",
         href: "/distributor/customers/affiliate",
       },
     ],
@@ -86,8 +108,8 @@ const NAV_ITEMS: NavItem[] = [
     Icon: BarChart3,
     collapsible: true,
     children: [
-      { label: "Sales", href: "/distributor/reports/sales" },
-      { label: "Payout", href: "/distributor/reports/payout" },
+      { label: "Sales", short: "SL", href: "/distributor/reports/sales" },
+      { label: "Payout", short: "PO", href: "/distributor/reports/payout" },
     ],
   },
   { label: "Support", Icon: HelpCircle, href: "/distributor/support" },
@@ -96,9 +118,9 @@ const NAV_ITEMS: NavItem[] = [
     Icon: Settings,
     collapsible: true,
     children: [
-      { label: "Bank Account", href: "/distributor/setting/bank" },
-      { label: "Reminder", href: "/distributor/setting/reminder" },
-      { label: "Country", href: "/distributor/setting/country" },
+      { label: "Bank Account", short: "BA", href: "/distributor/setting/bank" },
+      { label: "Reminder", short: "RM", href: "/distributor/setting/reminder" },
+      { label: "Country", short: "CT", href: "/distributor/setting/country" },
     ],
   },
 ];
@@ -184,7 +206,7 @@ function Sidebar() {
               )}
 
               {collapsible && children && isOpen ? (
-                <ul className={`hidden md:flex flex-col gap-1`}>
+                <ul className={`flex flex-col gap-1`}>
                   {children.map((child) => {
                     const childIsActive = isActive(child.href);
                     return (
@@ -193,13 +215,18 @@ function Sidebar() {
                           href={child.href}
                           aria-current={childIsActive ? "page" : undefined}
                           className={[
-                            "flex h-[40px] items-center rounded-md pl-9 px-3 text-sm leading-[1.4] tracking-[0.025em] transition-colors",
+                            "flex h-[40px] items-center justify-center md:justify-start rounded-md md:pl-9 md:px-3 text-sm leading-[1.4] tracking-[0.025em] transition-colors",
                             childIsActive
                               ? "bg-ink-secondary/30 text-brand"
                               : "text-surface-input hover:bg-white/5 hover:text-[#f3f3f3]",
                           ].join(" ")}
                         >
-                          {child.label}
+                          <span className="md:hidden font-semibold">
+                            {child.short}
+                          </span>
+                          <span className="hidden md:inline">
+                            {child.label}
+                          </span>
                         </Link>
                       </li>
                     );
