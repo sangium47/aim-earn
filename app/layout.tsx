@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Aim Earn",
-  description: "Aim Earn — distributor platform",
+  description: "Aim Earn — Distributor & Affiliator Platform",
 };
 
 export default function RootLayout({
