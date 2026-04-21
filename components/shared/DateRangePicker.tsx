@@ -113,7 +113,7 @@ export function DateRangePicker({
         <div
           role="dialog"
           aria-label="Select date range"
-          className="absolute right-0 top-full z-20 mt-2 flex w-[320px] flex-col gap-3 rounded-xl border border-line bg-white p-4 shadow-lg"
+          className="absolute right-0 top-full z-20 mt-2 flex w-[220px] md:w-[320px] flex-col gap-3 rounded-xl border border-line bg-white p-4 shadow-lg"
         >
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium text-ink-secondary">
