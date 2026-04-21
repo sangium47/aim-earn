@@ -1,4 +1,4 @@
-export * from "./shared";
+export * from "../shared";
 export { TitleBar } from "./TitleBar";
 export { MyPerformance } from "./MyPerformance";
 export { TeamPerformance } from "./TeamPerformance";

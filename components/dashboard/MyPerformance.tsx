@@ -1,5 +1,5 @@
 import { ArrowUpRight, BarChart3, Package, Wallet } from "lucide-react";
-import { CardHeader, ChangeChip } from "./shared";
+import { CardHeader, ChangeChip } from "../shared";
 
 const MY_PERFORMANCE = [
   {

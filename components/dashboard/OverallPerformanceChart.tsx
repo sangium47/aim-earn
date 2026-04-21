@@ -1,173 +1,139 @@
-import { Card, CardHeader } from "./shared";
+import { Card, CardHeader } from "../shared";
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+import {
+  ComposedChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
-/** Commission (USD) and Affiliate count per month, used by the area chart. */
-const CHART_DATA: { commission: number; affiliates: number }[] = [
-  { commission: 420, affiliates: 18 },
-  { commission: 520, affiliates: 22 },
-  { commission: 700, affiliates: 26 },
-  { commission: 640, affiliates: 28 },
-  { commission: 880, affiliates: 34 },
-  { commission: 980, affiliates: 30 },
-  { commission: 1180, affiliates: 38 },
-  { commission: 1080, affiliates: 42 },
-  { commission: 1260, affiliates: 45 },
-  { commission: 1340, affiliates: 48 },
-  { commission: 1280, affiliates: 50 },
-  { commission: 1380, affiliates: 54 },
+const data = [
+  { month: "Jan", commission: 620, affiliates: 14 },
+  { month: "Feb", commission: 780, affiliates: 19 },
+  { month: "Mar", commission: 540, affiliates: 22 },
+  { month: "Apr", commission: 910, affiliates: 28 },
+  { month: "May", commission: 1120, affiliates: 34 },
+  { month: "Jun", commission: 860, affiliates: 31 },
+  { month: "Jul", commission: 1280, affiliates: 42 },
+  { month: "Aug", commission: 1340, affiliates: 47 },
+  { month: "Sep", commission: 1050, affiliates: 39 },
+  { month: "Oct", commission: 1210, affiliates: 51 },
+  { month: "Nov", commission: 990, affiliates: 45 },
+  { month: "Dec", commission: 1390, affiliates: 58 },
 ];
 
 export function OverallPerformanceChart() {
-  const W = 532;
-  const H = 254;
-  const padL = 58;
-  const padR = 26;
-  const padT = 10;
-  const padB = 20;
-  const innerW = W - padL - padR;
-  const innerH = H - padT - padB;
-
-  const commissionMax = 1400;
-  const affiliatesMax = 60;
-
-  const xFor = (i: number) => padL + (i * innerW) / (CHART_DATA.length - 1);
-  const yForCommission = (v: number) =>
-    padT + innerH - (v / commissionMax) * innerH;
-  const yForAffiliates = (v: number) =>
-    padT + innerH - (v / affiliatesMax) * innerH;
-
-  const commissionLine = CHART_DATA.map(
-    (d, i) =>
-      `${i === 0 ? "M" : "L"} ${xFor(i)} ${yForCommission(d.commission)}`,
-  ).join(" ");
-  const commissionArea = `${commissionLine} L ${xFor(CHART_DATA.length - 1)} ${padT + innerH} L ${padL} ${padT + innerH} Z`;
-
-  const affiliatesLine = CHART_DATA.map(
-    (d, i) =>
-      `${i === 0 ? "M" : "L"} ${xFor(i)} ${yForAffiliates(d.affiliates)}`,
-  ).join(" ");
-  const affiliatesArea = `${affiliatesLine} L ${xFor(CHART_DATA.length - 1)} ${padT + innerH} L ${padL} ${padT + innerH} Z`;
-
-  const leftLabels = [
-    "$1400",
-    "$1200",
-    "$1000",
-    "€800",
-    "$600",
-    "$400",
-    "$200",
-  ];
-  const rightLabels = ["60", "50", "40", "30", "20", "10", "0"];
-
   return (
-    <Card className="flex h-full flex-col gap-2 md:gap-4 p-3 md:p-6">
-      <CardHeader title="Overall Performace" />
+    <Card className="flex h-full flex-col gap-2 md:gap-4 py-3 md:py-6">
+      <div className="px-3 md:px-6">
+        <CardHeader title="Overall Performace" />
+      </div>
 
-      <div className="flex flex-1 flex-col gap-2 md:gap-4">
-        <svg
-          viewBox={`0 0 ${W} ${H}`}
-          className="w-full"
-          role="img"
-          aria-label="Overall performance line chart: commission and number of affiliates by month"
-        >
-          <defs>
-            <linearGradient id="grad-commission" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#f8d237" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#f8d237" stopOpacity="0" />
-            </linearGradient>
-            <linearGradient id="grad-affiliates" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#1e1e1e" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#1e1e1e" stopOpacity="0" />
-            </linearGradient>
-          </defs>
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height={320}>
+          <ComposedChart
+            data={data}
+            margin={{ top: 8, right: 0, left: 8, bottom: 8 }}
+          >
+            <defs>
+              <linearGradient
+                id="commissionGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0%" stopColor="#1E1E1E" stopOpacity={0.35} />
+                <stop offset="100%" stopColor="#1E1E1E" stopOpacity={0} />
+              </linearGradient>
+              <linearGradient
+                id="affiliatesGradient"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0%" stopColor="#FACC15" stopOpacity={0.4} />
+                <stop offset="100%" stopColor="#FACC15" stopOpacity={0} />
+              </linearGradient>
+            </defs>
 
-          {/* Horizontal gridlines + left & right axis labels */}
-          {leftLabels.map((label, i) => {
-            const y = padT + (i * innerH) / (leftLabels.length - 1);
-            return (
-              <g key={label + i}>
-                <line
-                  x1={padL}
-                  y1={y}
-                  x2={W - padR}
-                  y2={y}
-                  stroke="#eeeeee"
-                  strokeWidth="1"
-                />
-                <text x={0} y={y + 4} className="fill-[#8a8a8a]" fontSize="12">
-                  {label}
-                </text>
+            <CartesianGrid stroke="#E5E6EA" vertical={false} />
+
+            <XAxis
+              dataKey="month"
+              tickLine={false}
+              axisLine={false}
+              tick={({ x, y, payload }) => (
                 <text
-                  x={W - 18}
-                  y={y + 4}
-                  className="fill-[#8a8a8a]"
-                  fontSize="12"
+                  x={x}
+                  y={Number(y) + 12}
+                  textAnchor="middle"
+                  className="fill-[#1E1E1E] text-xs md:text-sm"
                 >
-                  {rightLabels[i]}
+                  {payload.value}
                 </text>
-              </g>
-            );
-          })}
-
-          {/* Affiliates area (behind) */}
-          <path d={affiliatesArea} fill="url(#grad-affiliates)" />
-          <path
-            d={affiliatesLine}
-            fill="none"
-            stroke="#1e1e1e"
-            strokeWidth="2"
-          />
-
-          {/* Commission area (front) */}
-          <path d={commissionArea} fill="url(#grad-commission)" />
-          <path
-            d={commissionLine}
-            fill="none"
-            stroke="#f8d237"
-            strokeWidth="2.5"
-          />
-        </svg>
-
-        {/* Month axis */}
-        <div className="grid grid-cols-12 pl-[58px] pr-[26px] text-xs text-[#8a8a8a]">
-          {MONTHS.map((m) => (
-            <span key={m} className="text-center">
-              {m}
-            </span>
-          ))}
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-8 text-sm text-[#1e1e1e]">
-          <span className="inline-flex items-center gap-2">
-            <span
-              className="size-[10px] rounded-full bg-[#f8d237]"
-              aria-hidden
+              )}
             />
-            Commission
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span
-              className="size-[10px] rounded-full bg-[#1e1e1e]"
-              aria-hidden
+
+            <YAxis
+              yAxisId="left"
+              domain={[200, 1400]}
+              ticks={[200, 400, 600, 800, 1000, 1200, 1400]}
+              tickFormatter={(v) => `$${v}`}
+              tickLine={false}
+              axisLine={false}
             />
-            Number of Affiliates
-          </span>
-        </div>
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              domain={[0, 60]}
+              ticks={[0, 10, 20, 30, 40, 50, 60]}
+              tickLine={false}
+              axisLine={false}
+            />
+
+            <Tooltip />
+            <Legend
+              iconType="circle"
+              formatter={(value) => (
+                <span
+                  className="text-xs md:text-sm"
+                  style={{ color: "#1E1E1E" }}
+                >
+                  {value}
+                </span>
+              )}
+            />
+
+            <Area
+              yAxisId="left"
+              type="monotone"
+              dataKey="commission"
+              name="Commission"
+              stroke="#1E1E1E"
+              strokeWidth={3}
+              fill="url(#commissionGradient)"
+              dot={false}
+              activeDot={false}
+            />
+            <Area
+              yAxisId="right"
+              type="monotone"
+              dataKey="affiliates"
+              name="Number of Affiliates"
+              stroke="#FACC15"
+              strokeWidth={3}
+              fill="url(#affiliatesGradient)"
+              dot={false}
+              activeDot={false}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
       </div>
     </Card>
   );

@@ -1,4 +1,13 @@
-import { Card, CardHeader } from "./shared";
+"use client";
+
+import { useState } from "react";
+import { Card, CardHeader, Dialog, Table, TableColumn } from "../shared";
+import PopupTable from "./PopupTable";
+import {
+  memberProducts,
+  memberSummary,
+  type MemberProduct,
+} from "./PopupTable/data";
 
 const TOP_AFFILIATES = [
   { id: "AF-001", name: "Sarah Chen", country: "SG", orders: 120 },
@@ -35,49 +44,111 @@ function CountryPill({ code }: { code: string }) {
 }
 
 export function TopAffiliateMembers() {
-  return (
-    <Card className="flex flex-col gap-2 md:gap-4 p-3 md:p-6">
-      <CardHeader title="Top 10 Affiliate Members" />
+  const [isOpen, setIsOpen] = useState(false);
 
-      <div className="-mx-6 overflow-x-auto">
-        <table className="w-full min-w-[1080px] border-collapse">
-          <thead>
-            <tr className="text-left text-sm font-medium text-[#1e1e1e]">
-              <th className="py-3 pl-6 pr-4 font-medium">ID · Name</th>
-              <th className="px-4 py-3 font-medium">Country</th>
-              <th className="px-4 py-3 font-medium">Total Orders</th>
-              <th className="px-4 py-3 font-medium">Total Sales</th>
-              <th className="px-4 py-3 font-medium">Total Commission</th>
-              <th className="px-4 py-3 font-medium">Direct Commission</th>
-              <th className="px-4 py-3 font-medium">Indirect Commission</th>
-              <th className="px-4 py-3 pr-6 font-medium">Products</th>
-            </tr>
-          </thead>
-          <tbody>
-            {TOP_AFFILIATES.map(({ id, name, country, orders }) => (
-              <tr key={id} className="align-middle">
-                <td className="py-4 pl-6 pr-4">
-                  <div className="flex flex-col">
-                    <span className="text-base text-[#1e1e1e]">{name}</span>
-                    <span className="text-sm text-[#878787]">{id}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-4">
-                  <CountryPill code={country} />
-                </td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">{orders}</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 pr-6">
-                  <AvatarStack />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+  const columns: TableColumn<(typeof TOP_AFFILIATES)[0]>[] = [
+    {
+      header: "ID · Name",
+      render: (item) => (
+        <div className="flex flex-col">
+          <span className="text-sm md:text-base text-[#1e1e1e]">
+            {item.name}
+          </span>
+          <span className="text-xs md:text-sm text-[#878787]">{item.id}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Country",
+      render: (item) => <CountryPill code={item.country} />,
+    },
+    {
+      header: "Total Orders",
+      key: "orders",
+    },
+    {
+      header: "Total Sales",
+      render: () => "$42,781",
+    },
+    {
+      header: "Total Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Direct Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Indirect Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Products",
+      render: () => <AvatarStack />,
+    },
+  ];
+
+  return (
+    <>
+      <Card className="flex flex-col gap-2 md:gap-4 p-3 md:p-6">
+        <CardHeader title="Top 10 Affiliate Members" />
+        <Table
+          data={TOP_AFFILIATES}
+          columns={columns}
+          minWidth="min-w-[1080px]"
+          onRowClick={() => setIsOpen(true)}
+        />
+      </Card>
+
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+        <PopupTable
+          summary={memberSummary}
+          stats={memberSummary.stats}
+          onClose={() => setIsOpen(false)}
+          table={
+            <div className="flex flex-col gap-4 max-h-[50vh] overflow-y-auto">
+              <h3 className="text-[15px] font-medium leading-none tracking-[0.3px] text-[#1e1e1e]">
+                Orders Overview
+              </h3>
+              <Table
+                data={memberProducts}
+                columns={productColumns}
+                minWidth="720px"
+              />
+            </div>
+          }
+        />
+      </Dialog>
+    </>
   );
 }
+
+const productColumns: TableColumn<MemberProduct>[] = [
+  {
+    header: "Order ID",
+    headerClassName: "w-[100px]",
+    key: "orderID",
+  },
+  {
+    header: "Ordered Date",
+    headerClassName: "w-[120px]",
+    key: "orderedDate",
+  },
+  {
+    header: "Unit Sold",
+    key: "status",
+  },
+  {
+    header: "Total Sales",
+    key: "totalSales",
+  },
+  {
+    header: "Commission",
+    key: "commission",
+  },
+  {
+    header: "My Commission",
+    key: "myCommission",
+    headerClassName: "w-[160px]",
+  },
+];

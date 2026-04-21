@@ -1,4 +1,13 @@
-import { Card, CardHeader } from "./shared";
+"use client";
+
+import { useState } from "react";
+import { Card, CardHeader, Dialog, Table, TableColumn } from "../shared";
+import PopupTable from "./PopupTable";
+import {
+  affiliateMembers,
+  agentSummary,
+  type AffiliateMember,
+} from "./PopupTable/data";
 
 const BEST_SELLING = [
   {
@@ -60,51 +69,124 @@ function CountryPill({ code }: { code: string }) {
 }
 
 export function BestSellingProducts() {
-  return (
-    <Card className="flex flex-col gap-2 md:gap-4 p-3 md:p-6">
-      <CardHeader title="Top 10 Best Selling Products" />
+  const [isOpen, setIsOpen] = useState(false);
 
-      <div className="-mx-6 overflow-x-auto">
-        <table className="w-full min-w-[1080px] border-collapse">
-          <thead>
-            <tr className="text-left text-sm font-medium text-[#1e1e1e]">
-              <th className="py-3 pl-6 pr-4 font-medium">Product</th>
-              <th className="px-4 py-3 font-medium">Unit Sold</th>
-              <th className="px-4 py-3 font-medium">Total Sales</th>
-              <th className="px-4 py-3 font-medium">Total Commission</th>
-              <th className="px-4 py-3 font-medium">Direct Commission</th>
-              <th className="px-4 py-3 font-medium">Indirect Commission</th>
-              <th className="px-4 py-3 font-medium">Country</th>
-              <th className="px-4 py-3 pr-6 font-medium">
-                Top Affiliate Members
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {BEST_SELLING.map(({ product, sku, units, country }) => (
-              <tr key={product} className="align-middle">
-                <td className="py-4 pl-6 pr-4">
-                  <div className="flex flex-col">
-                    <span className="text-base text-[#1e1e1e]">{product}</span>
-                    <span className="text-sm text-[#878787]">{sku}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">{units}</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">$42,781</td>
-                <td className="px-4 py-4">
-                  <CountryPill code={country} />
-                </td>
-                <td className="px-4 py-4 pr-6">
-                  <AvatarStack />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Card>
+  const columns: TableColumn<(typeof BEST_SELLING)[0]>[] = [
+    {
+      header: "Product",
+      render: (item) => (
+        <div className="flex flex-col">
+          <span className="text-sm md:text-base text-[#1e1e1e]">
+            {item.product}
+          </span>
+          <span className="text-xs md:text-sm text-[#878787]">{item.sku}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Unit Sold",
+      key: "units",
+    },
+    {
+      header: "Total Sales",
+      render: () => "$42,781",
+    },
+    {
+      header: "Total Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Direct Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Indirect Commission",
+      render: () => "$42,781",
+    },
+    {
+      header: "Country",
+      render: (item) => <CountryPill code={item.country} />,
+    },
+    {
+      header: "Top Affiliate Members",
+      render: () => <AvatarStack />,
+    },
+  ];
+
+  return (
+    <>
+      <Card className="flex flex-col gap-2 md:gap-4 p-3 md:p-6">
+        <CardHeader title="Top 10 Best Selling Products" />
+        <Table
+          data={BEST_SELLING}
+          columns={columns}
+          minWidth="min-w-[1080px]"
+          onRowClick={() => setIsOpen(true)}
+        />
+      </Card>
+
+      <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+        <PopupTable
+          onClose={() => setIsOpen(false)}
+          summary={agentSummary}
+          stats={agentSummary.stats}
+          table={
+            <div className="flex flex-col gap-4 max-h-[50vh] overflow-y-auto">
+              <h3 className="text-[15px] font-medium leading-none tracking-[0.3px] text-[#1e1e1e]">
+                Affiliate Members
+              </h3>
+              <Table
+                data={affiliateMembers || []}
+                columns={memberColumns}
+                minWidth="720px"
+              />
+            </div>
+          }
+        />
+      </Dialog>
+    </>
   );
 }
+
+const memberColumns: TableColumn<AffiliateMember>[] = [
+  {
+    header: "Member Name",
+    headerClassName: "w-[200px]",
+    render: (item) => (
+      <div className="flex flex-col gap-0.5">
+        <span className="text-[14px] font-medium leading-[1.4] tracking-[0.28px] text-[#222125]">
+          {item.name}
+        </span>
+        <span className="text-[14px] font-medium leading-[1.4] tracking-[0.28px] text-[#5f5f5f]">
+          {item.agentId}
+        </span>
+      </div>
+    ),
+  },
+  {
+    header: "Country",
+    headerClassName: "w-[120px]",
+    render: (item) => (
+      <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-[rgba(248,210,55,0.35)] px-2 text-[12px] font-medium leading-[1.4] tracking-[0.24px] text-[#222125]">
+        {item.country}
+      </span>
+    ),
+  },
+  {
+    header: "Unit Sold",
+    key: "unitSold",
+  },
+  {
+    header: "Total Sales",
+    key: "totalSales",
+  },
+  {
+    header: "Commission",
+    key: "commission",
+  },
+  {
+    header: "My Commission",
+    key: "myCommission",
+    headerClassName: "w-[160px]",
+  },
+];

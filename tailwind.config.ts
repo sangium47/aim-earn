@@ -17,7 +17,7 @@ const config: Config = {
       colors: {
         brand: {
           DEFAULT: "#f8d237", // --sds-color-background-brand-default
-          border: "#b1610c", // --sds-color-border-brand-default
+          border: "#E7E7E7", // --sds-color-border-brand-default
           foreground: "#441f04", // Text/Brand/On Brand
         },
         surface: {
@@ -25,6 +25,7 @@ const config: Config = {
           card: "#ffffff",
           input: "#f4f5f8", // --sds-color-background-default-default
           chip: "#f1f1f1", // selected-item pill background (Select Country frame)
+          brand: "#EAE7E2",
         },
         line: {
           DEFAULT: "#e7e7e7", // --sds-color-border-default-default
@@ -37,6 +38,11 @@ const config: Config = {
           base: "#2c2c2c", // --sds-color-text-brand-default
           secondary: "#757575", // --sds-color-text-brand-secondary
           tertiary: "#878787", // Text/Base/Tertiary (placeholders)
+        },
+        status: {
+          paid: "#F5C242", // yellow segment
+          delivered: "#FFFFFF", // white segment
+          shipped: "#9B9B9B", // gray segment
         },
       },
       fontFamily: {

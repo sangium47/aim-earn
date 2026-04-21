@@ -1,7 +1,8 @@
-import { Card, CardHeader } from "./shared";
+import { Card, CardHeader, Table, TableColumn } from "../shared";
 
 export type BottomPanelProps = {
   title: string;
+  color?: string;
   summaryText: string;
   summaryNumber: string;
   extraColumn: { header: string; rows: string[] };
@@ -10,6 +11,7 @@ export type BottomPanelProps = {
 
 export function BottomPanel({
   title,
+  color,
   summaryText,
   summaryNumber,
   extraColumn,
@@ -20,41 +22,29 @@ export function BottomPanel({
       <CardHeader title={title} />
 
       {/* Summary block with accent bar */}
-      <div className="flex items-center gap-2 md:gap-4 rounded-2xl border border-[#e7e7e7] p-4">
-        <span aria-hidden className="h-16 w-2 rounded-full bg-[#f8d237]" />
+      <div className="flex items-center bg-surface-page gap-2 md:gap-4 rounded-2xl p-4">
+        <span
+          aria-hidden
+          className={`h-16 w-2 rounded-full ${color ? color : "bg-[#f8d237]"}`}
+        />
         <p className="flex-1 text-base text-[#1e1e1e]">{summaryText}</p>
         <p className="text-[32px] font-medium leading-[1.2] tracking-[0.01em] text-[#1e1e1e]">
           {summaryNumber}
         </p>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[520px] border-collapse">
-          <thead>
-            <tr className="text-left text-sm font-medium text-[#1e1e1e]">
-              <th className="py-3 pr-4 font-medium">Name</th>
-              <th className="px-4 py-3 font-medium">Email</th>
-              <th className="px-4 py-3 font-medium">{extraColumn.header}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr key={row.email}>
-                <td className="py-4 pr-4 text-base text-[#1e1e1e]">
-                  {row.name}
-                </td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">
-                  {row.email}
-                </td>
-                <td className="px-4 py-4 text-base text-[#1e1e1e]">
-                  {extraColumn.rows[i]}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        data={rows}
+        columns={[
+          { header: "Name", key: "name" },
+          { header: "Email", key: "email" },
+          {
+            header: extraColumn.header,
+            render: (_, index) => extraColumn.rows[index],
+          },
+        ]}
+        minWidth="min-w-[520px]"
+      />
     </Card>
   );
 }

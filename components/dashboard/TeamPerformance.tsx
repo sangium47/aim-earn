@@ -1,5 +1,5 @@
 import { BarChart3, Package, Users, Wallet } from "lucide-react";
-import { Card, CardHeader } from "./shared";
+import { Card, CardHeader } from "../shared";
 
 const TEAM_PERFORMANCE = [
   { label: "Total Orders", value: "1,874", Icon: Package },

@@ -40,6 +40,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <BottomPanel
           title="Orders not purchased in the last 90 days"
+          color="bg-[#00BFFF]"
           summaryText="Customers who haven't placed an order in the last 90 days"
           summaryNumber="210"
           extraColumn={{
@@ -50,6 +51,7 @@ export default function DashboardPage() {
         />
         <BottomPanel
           title="New Affiliate Members"
+          color="bg-[#FF0000]"
           summaryText="Affiliates who joined in the last 30 days but haven't sent any email yet"
           summaryNumber="10"
           extraColumn={{
