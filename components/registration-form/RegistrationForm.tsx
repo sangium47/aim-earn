@@ -75,12 +75,6 @@ export function RegistrationForm({
               >
                 Register to be Distributor
               </Link>
-              <Link
-                href="/register-affiliate?page=/login"
-                className="text-sm font-medium underline flex-1 md:text-right border-l border-line leading-[1.4] tracking-figma text-ink hover:underline"
-              >
-                Register to be Affiliator
-              </Link>
             </div>
             <button
               type="submit"
