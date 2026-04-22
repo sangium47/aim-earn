@@ -146,7 +146,7 @@ export function OtpInput({
           onFocus={(e) => e.target.select()}
           className={[
             "min-w-0 flex-1 self-stretch rounded-lg bg-surface-input",
-            "text-center font-sans text-xl font-medium text-ink",
+            "text-center font-sans text-[16px] font-medium text-ink",
             "outline-none transition-all",
             "focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1 focus-visible:ring-offset-surface-card",
             "disabled:cursor-not-allowed disabled:opacity-60",

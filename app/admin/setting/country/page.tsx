@@ -74,9 +74,7 @@ export default function AdminSettingCountryPage() {
   const [status, setStatus] = useState("all");
 
   const [editor, setEditor] = useState<
-    | { mode: "create" }
-    | { mode: "edit"; target: CountryConfig }
-    | null
+    { mode: "create" } | { mode: "edit"; target: CountryConfig } | null
   >(null);
   const [deleteTarget, setDeleteTarget] = useState<CountryConfig | null>(null);
 
@@ -194,10 +192,7 @@ export default function AdminSettingCountryPage() {
         minWidth="min-w-[1120px]"
       />
 
-      <CountryEditorDialog
-        editor={editor}
-        onClose={() => setEditor(null)}
-      />
+      <CountryEditorDialog editor={editor} onClose={() => setEditor(null)} />
 
       <Dialog
         width="max-w-md"
@@ -243,10 +238,7 @@ function CountryEditorDialog({
   editor,
   onClose,
 }: {
-  editor:
-    | { mode: "create" }
-    | { mode: "edit"; target: CountryConfig }
-    | null;
+  editor: { mode: "create" } | { mode: "edit"; target: CountryConfig } | null;
   onClose: () => void;
 }) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
@@ -317,13 +309,10 @@ function CountryEditorDialog({
             <input
               value={form.distributorFee}
               onChange={(e) =>
-                update(
-                  "distributorFee",
-                  e.target.value.replace(/[^0-9.]/g, ""),
-                )
+                update("distributorFee", e.target.value.replace(/[^0-9.]/g, ""))
               }
               placeholder="Enter Distributor Fee"
-              className="h-full flex-1 bg-transparent px-4 text-[15px] font-medium text-[#222125] outline-none placeholder:text-[#878787]"
+              className="h-full flex-1 bg-transparent px-4 text-[16px] font-medium text-[#222125] outline-none placeholder:text-[#878787]"
             />
             <span className="flex h-full w-14 items-center justify-center border-l border-[#cbcfd5] bg-[#f4f5f8] text-[15px] font-medium text-[#878787]">
               $
@@ -369,11 +358,7 @@ function CountryEditorDialog({
         </label>
 
         <div className="flex flex-col-reverse gap-2 md:flex-row md:justify-end md:gap-3">
-          <Button
-            variant="outline"
-            className="md:w-[100px]"
-            onClick={onClose}
-          >
+          <Button variant="outline" className="md:w-[100px]" onClick={onClose}>
             Cancel
           </Button>
           <Button className="md:w-[140px]" onClick={onClose}>

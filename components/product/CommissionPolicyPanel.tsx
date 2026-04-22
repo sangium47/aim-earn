@@ -391,7 +391,7 @@ function PercentField({
           disabled={disabled}
           onChange={(e) => onChange(e.target.value)}
           onWheel={(e) => e.currentTarget.blur()}
-          className="h-full flex-1 bg-transparent outline-none disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="h-full flex-1 text-[16px] bg-transparent outline-none disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         />
         <span className="shrink-0 text-[#878787]">%</span>
       </span>
@@ -429,7 +429,7 @@ function RowPercentInput({
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         onWheel={(e) => e.currentTarget.blur()}
-        className="h-full flex-1 bg-transparent outline-none disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        className="h-full flex-1 text-[16px] bg-transparent outline-none disabled:cursor-not-allowed [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
       />
       <span className="shrink-0 text-[#878787]">%</span>
     </span>

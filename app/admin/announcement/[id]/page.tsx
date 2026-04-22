@@ -404,7 +404,7 @@ function DateField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-full flex-1 min-w-0 bg-transparent outline-none placeholder:text-[#878787]"
+        className="h-full flex-1 min-w-0 bg-transparent text-[16px] outline-none placeholder:text-[#878787]"
       />
       <Calendar className="size-4 text-[#5f5f5f]" aria-hidden />
     </span>
@@ -427,7 +427,7 @@ function TimeField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="h-full flex-1 min-w-0 bg-transparent outline-none placeholder:text-[#878787]"
+        className="h-full flex-1 min-w-0 bg-transparent text-[16px] outline-none placeholder:text-[#878787]"
       />
       <Calendar className="size-4 text-[#5f5f5f]" aria-hidden />
     </span>

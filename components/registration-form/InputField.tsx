@@ -34,7 +34,7 @@ export const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
           id={inputId}
           className={[
             "w-full rounded-lg bg-surface-input px-4 py-3 border border-line",
-            "text-[15px] font-medium leading-none tracking-figma text-ink",
+            "text-[16px] font-medium leading-none tracking-figma text-ink",
             "placeholder:text-ink-tertiary placeholder:font-medium",
             "outline-none transition-colors",
             "focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1 focus-visible:ring-offset-surface-card",

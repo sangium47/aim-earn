@@ -26,7 +26,7 @@ export function Input(props: InputProps) {
         ) : null}
         <textarea
           className={[
-            "min-h-[96px] w-full flex-1 resize-y bg-transparent outline-none placeholder:text-ink-tertiary",
+            "min-h-[96px] w-full flex-1 text-[16px] resize-y bg-transparent outline-none placeholder:text-ink-tertiary",
             className,
           ].join(" ")}
           {...rest}
@@ -64,7 +64,7 @@ export function Input(props: InputProps) {
       ) : null}
       <input
         className={[
-          "h-full w-full flex-1 bg-transparent outline-none placeholder:text-ink-tertiary",
+          "h-full w-full flex-1 text-[16px] bg-transparent outline-none placeholder:text-ink-tertiary",
           className,
         ].join(" ")}
         {...rest}
