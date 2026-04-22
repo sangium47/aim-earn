@@ -6,35 +6,21 @@ import { MailIcon } from "lucide-react";
 import {
   Breadcrumb,
   Button,
+  CountryPill,
   Dialog,
   FilterBar,
   PageTitle,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
-import {
-  SendEmail,
-  type EmailTemplate,
-} from "@/components/affiliate-list/SendEmail";
-import { MONTHS } from "../../products/mock";
-import { CUSTOMERS, type Customer } from "../mock";
-
-function formatDate(iso: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
-
-function CountryPill({ code }: { code: string }) {
-  return (
-    <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-[rgba(248,210,55,0.35)] px-2 text-xs font-medium tracking-[0.02em] text-ink">
-      {code}
-    </span>
-  );
-}
+import { SendEmail } from "@/components/affiliate-list/SendEmail";
+import type {
+  Customer,
+  DateRange,
+  EmailTemplate,
+  TableColumn,
+} from "@/components/type";
+import { CUSTOMERS } from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 export default function DirectCustomerPage() {
   const router = useRouter();

@@ -7,11 +7,12 @@ import {
   CardHeader,
   FilterBar,
   PageTitle,
+  StatusPill,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
-import { MONTHS } from "../../products/mock";
+import type { DateRange, TableColumn } from "@/components/type";
+import { MONTHS } from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 const PERFORMANCE = [
   {
@@ -102,14 +103,6 @@ const PAYOUTS: Payout[] = [
   },
 ];
 
-function formatDate(iso: string | null) {
-  if (!iso) return "—";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
-
 function formatCycle(start: string, end: string) {
   const [sy, sm, sd] = start.split("-");
   const [ey, em, ed] = end.split("-");
@@ -121,20 +114,6 @@ function formatCycle(start: string, end: string) {
   // Same year → "1 Dec-15 Jan 2026"
   if (sy === ey) return `${sd} ${sMonth}-${ed} ${eMonth} ${ey}`;
   return `${sd} ${sMonth} ${sy} – ${ed} ${eMonth} ${ey}`;
-}
-
-function StatusPill({ status }: { status: PayoutStatus }) {
-  const cfg = PAYOUT_STATUS_CONFIG[status];
-  return (
-    <span className="inline-flex items-center gap-2 text-[14px] font-medium text-[#222125]">
-      <span
-        aria-hidden
-        className="inline-block size-2 rounded-full"
-        style={{ backgroundColor: cfg.dotColor }}
-      />
-      {cfg.label}
-    </span>
-  );
 }
 
 export default function PayoutReportPage() {
@@ -150,7 +129,7 @@ export default function PayoutReportPage() {
     {
       header: "Paid Date",
       headerClassName: "min-w-[160px]",
-      render: (item) => formatDate(item.paidDate),
+      render: (item) => formatDate(item.paidDate, "—"),
     },
     {
       header: "Amount",
@@ -172,7 +151,7 @@ export default function PayoutReportPage() {
     {
       header: "Status",
       headerClassName: "min-w-[120px]",
-      render: (item) => <StatusPill status={item.status} />,
+      render: (item) => <StatusPill {...PAYOUT_STATUS_CONFIG[item.status]} />,
     },
   ];
 

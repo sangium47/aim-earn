@@ -9,8 +9,8 @@ import {
   FilterBar,
   PageTitle,
   Table,
-  type TableColumn,
 } from "@/components/shared";
+import type { TableColumn } from "@/components/type";
 
 type CountryRow = {
   country: string;

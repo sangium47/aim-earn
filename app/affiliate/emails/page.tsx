@@ -9,20 +9,15 @@ import {
   FilterBar,
   PageTitle,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
+import type {
+  DateRange,
+  EmailTemplateRecord,
+  TableColumn,
+} from "@/components/type";
 import { TrashIcon } from "@/components/icons";
-import { MONTHS } from "../products/mock";
-import { EMAIL_TEMPLATES, type EmailTemplate } from "./mock";
-
-function formatDate(iso: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
+import { EMAIL_TEMPLATES } from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 export default function EmailPage() {
   const router = useRouter();
@@ -34,7 +29,7 @@ export default function EmailPage() {
     setRows((prev) => prev.filter((r) => r.id !== id));
   };
 
-  const columns: TableColumn<EmailTemplate>[] = [
+  const columns: TableColumn<EmailTemplateRecord>[] = [
     {
       header: "ID",
       headerClassName: "min-w-[140px]",

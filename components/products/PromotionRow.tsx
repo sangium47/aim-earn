@@ -1,13 +1,5 @@
-import type { ReactNode } from "react";
 import { MegaphoneIcon, TrashIcon } from "@/components/icons";
-
-export type Promotion = {
-  id: string;
-  name: string;
-  description: string;
-  /** Optional custom icon for the yellow tile. Defaults to a megaphone. */
-  icon?: ReactNode;
-};
+import type { Promotion } from "@/components/type";
 
 type PromotionRowProps = {
   promotion: Promotion;

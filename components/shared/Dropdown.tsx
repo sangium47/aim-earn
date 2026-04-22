@@ -2,8 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
-
-export type DropdownOption = { label: string; value: string };
+import type { DropdownOption } from "@/components/type";
 
 type DropdownProps = {
   label?: ReactNode;
@@ -16,6 +15,7 @@ type DropdownProps = {
   disabled?: boolean;
   /** Where the options panel opens relative to the trigger. Defaults to "bottom". */
   position?: "top" | "bottom";
+  color?: string;
 };
 
 /**
@@ -32,6 +32,7 @@ export function Dropdown({
   fullWidth = false,
   disabled = false,
   position = "bottom",
+  color = "bg-[#f4f5f8]",
 }: DropdownProps) {
   const fieldId = useId();
   const [open, setOpen] = useState(false);
@@ -76,7 +77,7 @@ export function Dropdown({
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex h-10 w-full items-center gap-2 rounded-lg bg-[#f4f5f8] py-3 pl-4 pr-3 text-left text-[15px] leading-none transition-colors hover:bg-[#eceef2] disabled:bg-line disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-[#f4f5f8]"
+        className={`flex h-10 w-full items-center gap-2 ${color} rounded-lg py-3 pl-4 pr-3 text-left text-[15px] leading-none transition-colors hover:bg-[#eceef2] disabled:bg-line disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-[#f4f5f8]`}
       >
         <span
           className={`min-w-0 flex-1 truncate ${

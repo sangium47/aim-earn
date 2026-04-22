@@ -8,10 +8,11 @@ import {
   Dialog,
   Dropdown,
   Input,
+  SectionRow,
   PageTitle,
 } from "@/components/shared";
 import { TrashIcon, XIcon } from "@/components/icons";
-import { MONTHS, PROMOTIONS } from "../../products/mock";
+import { EMAIL_TEMPLATES, MONTHS, PROMOTIONS } from "@/components/mock";
 
 function formatPeriodDate(iso: string) {
   if (!iso) return "";
@@ -20,7 +21,7 @@ function formatPeriodDate(iso: string) {
   if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
   return `${d} ${MONTHS[monthIndex]},${y}`;
 }
-import { EMAIL_TEMPLATES, type EmailTemplate } from "../mock";
+import type { EmailTemplateRecord } from "@/components/type";
 
 type EmailForm = {
   name: string;
@@ -36,7 +37,7 @@ const EMPTY_FORM: EmailForm = {
   promotionId: "",
 };
 
-function formFromTemplate(t: EmailTemplate): EmailForm {
+function formFromTemplate(t: EmailTemplateRecord): EmailForm {
   return {
     name: t.name,
     title: t.title,
@@ -242,25 +243,6 @@ export default function EmailDetailPage() {
         </div>
       </Dialog>
     </main>
-  );
-}
-
-function SectionRow({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col md:flex-row gap-2 md:gap-4 md:items-start w-full">
-      <div className="flex flex-col items-start justify-center shrink-0 md:w-[371px]">
-        <h3 className="text-[20px] font-medium leading-[1.2] tracking-[0.4px] text-[#1e1e1e]">
-          {title}
-        </h3>
-      </div>
-      <div className="flex flex-1 min-w-0 flex-col items-start">{children}</div>
-    </div>
   );
 }
 

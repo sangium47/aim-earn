@@ -10,7 +10,6 @@ import {
   Check,
   ChevronDown,
   HelpCircle,
-  List,
   Mail,
   Menu,
   PieChart as PieIcon,
@@ -18,10 +17,13 @@ import {
   ShoppingCart,
   Tag,
   User as UserIcon,
+  UsersRound,
   X,
   type LucideIcon,
 } from "lucide-react";
 import { Dialog } from "@/components/shared";
+import { COUNTRY_NAMES } from "@/components/mock";
+import { clearSession, getSession } from "@/lib/session";
 
 const LANGUAGES = [
   { code: "en", label: "English" },
@@ -166,7 +168,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", Icon: PieIcon, href: "/affiliate/dashboard" },
-  { label: "Affiliate", Icon: List, href: "/affiliate/affiliate-list" },
+  { label: "Affiliate", Icon: UsersRound, href: "/affiliate/affiliate-list" },
   { label: "Products", Icon: Tag, href: "/affiliate/products" },
   {
     label: "Orders",
@@ -356,8 +358,6 @@ function Sidebar({
 /*  HEADER                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const COUNTRY = { code: "SG", label: "Singapore" } as const;
-
 function Header({
   mobileOpen,
   onToggleSidebar,
@@ -369,7 +369,18 @@ function Header({
   const [profileOpen, setProfileOpen] = useState(false);
   const [lang, setLang] = useState<(typeof LANGUAGES)[number]["code"]>("en");
   const [langDialogOpen, setLangDialogOpen] = useState(false);
+  const [countryLabel, setCountryLabel] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
+
+  useEffect(() => {
+    const session = getSession();
+    const code = session?.countries?.[0];
+    if (!code) {
+      setCountryLabel("");
+      return;
+    }
+    setCountryLabel(COUNTRY_NAMES[code] ?? code);
+  }, []);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -431,7 +442,7 @@ function Header({
 
         {/* Country */}
         <span className="inline-flex items-center text-sm text-[#1e1e1e]">
-          {COUNTRY.label}
+          {countryLabel}
         </span>
       </div>
 
@@ -550,6 +561,7 @@ function Header({
                   role="menuitem"
                   onClick={() => {
                     setProfileOpen(false);
+                    clearSession();
                     router.push("/login");
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#f4f5f8]"

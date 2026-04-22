@@ -2,21 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { OtpInput } from "./OtpInput";
-
-export type OtpFormProps = {
-  /** Called with the 6-digit code when the user submits. */
-  onSubmit?: (code: string) => void | Promise<void>;
-  /** Called when the user clicks the back button. */
-  onBack?: () => void;
-  /** Number of digits in the code. Defaults to 6 (matches Figma). */
-  length?: number;
-  /** Disables the submit button and the input while an async op is running. */
-  isSubmitting?: boolean;
-  /** Auto-submit when the user fills all digits. Defaults to false. */
-  autoSubmit?: boolean;
-  /** Override outer className. */
-  className?: string;
-};
+import type { OtpFormProps } from "@/components/type";
 
 /**
  * OTP confirmation form.

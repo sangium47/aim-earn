@@ -10,7 +10,6 @@ import {
   Check,
   ChevronDown,
   HelpCircle,
-  List,
   Mail,
   Menu,
   PieChart as PieIcon,
@@ -18,10 +17,13 @@ import {
   ShoppingCart,
   Tag,
   User as UserIcon,
+  UsersRound,
   X,
   type LucideIcon,
 } from "lucide-react";
 import { Dialog } from "@/components/shared";
+import { COUNTRY_NAMES } from "@/components/mock";
+import { clearSession, getSession } from "@/lib/session";
 
 const LANGUAGES = [
   { code: "en", label: "English" },
@@ -168,7 +170,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", Icon: PieIcon, href: "/distributor/dashboard" },
   {
     label: "Affiliate",
-    Icon: List,
+    Icon: UsersRound,
     collapsible: true,
     children: [
       { label: "Own Affiliates", href: "/distributor/affiliate-list" },
@@ -380,11 +382,9 @@ function Sidebar({
 /*  HEADER                                                                     */
 /* -------------------------------------------------------------------------- */
 
-const COUNTRY_CHOICES = [
-  { code: "all", label: "All Country" },
-  { code: "SG", label: "Singapore" },
-  { code: "TH", label: "Thailand" },
-] as const;
+type CountryChoice = { code: string; label: string };
+
+const ALL_COUNTRY: CountryChoice = { code: "all", label: "All Country" };
 
 function Header({
   mobileOpen,
@@ -400,8 +400,8 @@ function Header({
   const [langDialogOpen, setLangDialogOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState(NOTIFICATIONS);
-  const [country, setCountry] =
-    useState<(typeof COUNTRY_CHOICES)[number]["code"]>("all");
+  const [userCountries, setUserCountries] = useState<string[]>([]);
+  const [country, setCountry] = useState<string>("all");
   const [countryOpen, setCountryOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -410,18 +410,37 @@ function Header({
   const currentLang = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
   const unreadCount = notifications.filter((n) => n.unread).length;
 
+  // Load the signed-in user's countries from the session (client-only).
+  useEffect(() => {
+    const session = getSession();
+    setUserCountries(session?.countries ?? []);
+  }, []);
+
   const isDashboard = pathname === "/distributor/dashboard";
-  const countryOptions = isDashboard
-    ? COUNTRY_CHOICES
-    : COUNTRY_CHOICES.filter((c) => c.code !== "all");
+  const sessionChoices: CountryChoice[] = userCountries.map((code) => ({
+    code,
+    label: COUNTRY_NAMES[code] ?? code,
+  }));
+  const countryOptions: CountryChoice[] = isDashboard
+    ? [ALL_COUNTRY, ...sessionChoices]
+    : sessionChoices;
 
   // If we navigate away from the dashboard while "All" is selected,
   // fall back to the first available country.
   useEffect(() => {
     if (country === "all" && !isDashboard) {
-      setCountry(countryOptions[0]?.code ?? "SG");
+      setCountry(countryOptions[0]?.code ?? "");
     }
   }, [country, isDashboard, countryOptions]);
+
+  // If the selected country is no longer in the user's list (e.g. session
+  // loaded after first paint), snap back to the first available option.
+  useEffect(() => {
+    if (countryOptions.length === 0) return;
+    if (!countryOptions.some((c) => c.code === country)) {
+      setCountry(countryOptions[0].code);
+    }
+  }, [country, countryOptions]);
 
   const currentCountry =
     countryOptions.find((c) => c.code === country) ?? countryOptions[0];
@@ -661,6 +680,7 @@ function Header({
                   role="menuitem"
                   onClick={() => {
                     setProfileOpen(false);
+                    clearSession();
                     router.push("/login");
                   }}
                   className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-ink transition-colors hover:bg-[#f4f5f8]"

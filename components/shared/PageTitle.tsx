@@ -4,13 +4,17 @@ export function PageTitle({
   title,
   description,
   actions,
+  className = "",
 }: {
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
+    <div
+      className={`flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6 ${className}`}
+    >
       <div className="flex flex-col gap-1.5">
         <h1 className="text-[24px] font-medium leading-[1.2] tracking-[0.48px] text-ink-heading md:text-[28px]">
           {title}

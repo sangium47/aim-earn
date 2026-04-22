@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { Tabs } from "@/components/shared/Tabs";
-import {
-  CountryCommissionRow,
-  type CountryCommission,
-} from "./CountryCommissionRow";
+import { CountryCommissionRow } from "./CountryCommissionRow";
 import PromotionsList from "./PromotionList";
+import type { CountryCommission } from "@/components/type";
 
 type TabKey = "commission" | "promotion" | "media";
 

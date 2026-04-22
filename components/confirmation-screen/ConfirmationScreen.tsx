@@ -1,17 +1,5 @@
-import type { ReactNode } from "react";
 import { CheckCircleIcon } from "@/components/icons";
-
-export type ConfirmationScreenProps = {
-  /** Main heading. Defaults to the Figma source's copy. */
-  title?: string;
-  /** Body copy — accepts ReactNode so callers can embed `<br />`, `<strong>`, etc. */
-  description: ReactNode;
-  /** Override the default check-circle icon. */
-  icon?: ReactNode;
-  /** Optional slot for action buttons (e.g. "Open email app", "Resend"). */
-  action?: ReactNode;
-  className?: string;
-};
+import type { ConfirmationScreenProps } from "@/components/type";
 
 /**
  * Generic success-state screen.

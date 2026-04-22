@@ -51,15 +51,6 @@ function SelectPill({ options, defaultValue, onChange }: SelectPillProps) {
 }
 
 export function TitleBar() {
-  const [selectedRole, setSelectedRole] = useState<"Distributor" | "Affiliate">(
-    "Distributor",
-  );
-
-  const handleRoleChange = (role: "Distributor" | "Affiliate") => {
-    setSelectedRole(role);
-    console.log("Selected role:", role);
-  };
-
   return (
     <section className="flex flex-col gap-4">
       {/* Breadcrumb */}
@@ -88,40 +79,6 @@ export function TitleBar() {
             defaultValue="Last 7 days"
             onChange={(value) => console.log("Selected time period:", value)}
           />
-
-          {/* Role toggle */}
-          <div
-            role="tablist"
-            aria-label="View as"
-            className="flex h-10 items-center gap-2 rounded-lg border border-[#e8e8e8] bg-white p-1"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={selectedRole === "Distributor"}
-              onClick={() => handleRoleChange("Distributor")}
-              className={`flex w-full h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
-                selectedRole === "Distributor"
-                  ? "bg-[#222125] text-white shadow-[0_4px_10px_0_rgba(0,0,0,0.09)]"
-                  : "text-[#1e1e1e] hover:bg-[#f5f5f5]"
-              }`}
-            >
-              Distributor
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={selectedRole === "Affiliate"}
-              onClick={() => handleRoleChange("Affiliate")}
-              className={`flex w-full h-full items-center justify-center rounded-lg px-2 text-sm font-medium tracking-[0.02em] transition-all ${
-                selectedRole === "Affiliate"
-                  ? "bg-[#222125] text-white shadow-[0_4px_10px_0_rgba(0,0,0,0.09)]"
-                  : "text-[#1e1e1e] hover:bg-[#f5f5f5]"
-              }`}
-            >
-              Affiliate
-            </button>
-          </div>
         </div>
         <p className="truncate text-sm font-medium tracking-[0.02em] text-[#767676]">
           * The displayed total is not final and will be converted based on the

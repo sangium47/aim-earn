@@ -3,25 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/shared/Button";
 import { ProductThumbnail } from "./ProductThumbnail";
-
-export type ProductMedia =
-  | { type: "image"; url: string; alt?: string }
-  | { type: "video"; url: string; poster?: string };
-
-export type ProductInfo = {
-  name: string;
-  id: string; // e.g. "#PR6145"
-  sku: string;
-  price: string; // e.g. "$200"
-  brand: string;
-  description: string;
-  /** Preferred: gallery of images and/or videos. */
-  media?: ProductMedia[];
-  /** Legacy single-image fallback. Used when `media` is omitted. */
-  imageUrl?: string;
-  imageAlt?: string;
-  downloadUrl?: string;
-};
+import type { ProductInfo, ProductMedia } from "@/components/type";
 
 type ProductInfoCardProps = {
   product: ProductInfo;

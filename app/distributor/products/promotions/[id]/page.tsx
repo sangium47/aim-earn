@@ -3,11 +3,13 @@
 import { useParams, useRouter } from "next/navigation";
 import {
   Breadcrumb,
+  Button,
   Dialog,
+  Divider,
   Dropdown,
   Input,
   PageTitle,
-  Button,
+  SectionRow,
 } from "@/components/shared";
 import { DateRangePicker } from "@/components/shared/DateRangePicker";
 import { UploadIcon } from "lucide-react";
@@ -19,10 +21,12 @@ import {
   PRODUCTS,
   PROMOTIONS,
   STATUS_CONFIG,
-  type DiscountType,
-  type Promotion,
-  type PromotionStatus,
-} from "../../mock";
+} from "@/components/mock";
+import type {
+  DiscountType,
+  ProductPromotion,
+  PromotionStatus,
+} from "@/components/type";
 
 type PromotionForm = {
   productId: string;
@@ -50,7 +54,7 @@ const EMPTY_FORM: PromotionForm = {
   discountValue: "",
 };
 
-function formFromPromotion(p: Promotion): PromotionForm {
+function formFromPromotion(p: ProductPromotion): PromotionForm {
   return {
     productId: p.productId,
     thumbnail: p.thumbnail,
@@ -560,28 +564,6 @@ export default function PromotionDetailPage() {
   );
 }
 
-function Divider() {
-  return <div className="h-px w-full bg-[#e7e7e7]">&nbsp;</div>;
-}
-
-function SectionRow({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col md:flex-row gap-2 md:gap-4 md:items-start w-full">
-      <div className="flex flex-col items-start justify-center shrink-0 md:w-[371px]">
-        <h3 className="text-[20px] font-medium leading-[1.2] tracking-[0.4px] text-[#1e1e1e]">
-          {title}
-        </h3>
-      </div>
-      <div className="flex flex-1 min-w-0 flex-col items-start">{children}</div>
-    </div>
-  );
-}
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (

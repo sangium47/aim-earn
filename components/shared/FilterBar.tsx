@@ -1,33 +1,31 @@
 "use client";
 
-import { DateRangePicker, type DateRange } from "./DateRangePicker";
-import { Dropdown, type DropdownOption } from "./Dropdown";
+import { DateRangePicker } from "./DateRangePicker";
+import { Dropdown } from "./Dropdown";
 import { SearchInput } from "./SearchInput";
-
-export type { DateRange };
-
-export type FilterBarDropdown = {
-  label?: string;
-  placeholder?: string;
-  value?: string;
-  options: DropdownOption[];
-  onChange?: (value: string) => void;
-};
+import type {
+  DateRange,
+  FilterBarDateRange,
+  FilterBarDropdown,
+} from "@/components/type";
 
 type FilterBarProps = {
   searchValue?: string;
   searchPlaceholder?: string;
   datePlaceholder?: string;
   onSearchChange?: (value: string) => void;
+  /** Single-date-range convenience props. Ignored when `dateRanges` is set. */
   dateLabel?: string;
   dateValue?: DateRange | null | undefined;
   onDateClick?: (range: DateRange) => void;
-  /** One or more dropdown filters. Rendered between Search and DateRangePicker. */
+  /** Multiple date-range filters — rendered in order before the dropdowns. */
+  dateRanges?: FilterBarDateRange[];
+  /** One or more dropdown filters. Rendered after the date pickers. */
   dropdowns?: FilterBarDropdown[];
 };
 
 /**
- * Search + dropdown(s) + date-range filter strip (Figma node 137:51167).
+ * Search + date range(s) + dropdown(s) filter strip (Figma node 137:51167).
  */
 export function FilterBar({
   searchValue,
@@ -37,24 +35,40 @@ export function FilterBar({
   dateLabel = "Registed Date",
   dateValue,
   onDateClick,
+  dateRanges,
   dropdowns,
 }: FilterBarProps) {
+  const resolvedRanges: FilterBarDateRange[] =
+    dateRanges && dateRanges.length > 0
+      ? dateRanges
+      : dateValue
+        ? [
+            {
+              label: dateLabel,
+              placeholder: datePlaceholder,
+              value: dateValue,
+              onChange: onDateClick,
+            },
+          ]
+        : [];
+
   return (
-    <div className="flex flex-col items-end gap-2 md:gap-3 rounded-2xl bg-white p-3 md:p-6 shadow-[0_3px_7.6px_0_rgba(12,12,13,0.03)] md:flex-row">
+    <div className="flex flex-col items-end gap-2 md:gap-3 rounded-2xl bg-white p-3 md:p-6 shadow-[0_3px_7.6px_0_rgba(12,12,13,0.03)] md:flex-row md:flex-wrap">
       <SearchInput
         label="Search"
         searchValue={searchValue}
         searchPlaceholder={searchPlaceholder}
         onSearchChange={onSearchChange}
       />
-      {dateValue ? (
+      {resolvedRanges.map((d, i) => (
         <DateRangePicker
-          label={dateLabel}
-          datePlaceholder={datePlaceholder}
-          dateValue={dateValue}
-          onDateClick={onDateClick}
+          key={`${d.label ?? "date"}-${i}`}
+          label={d.label}
+          datePlaceholder={d.placeholder ?? ""}
+          dateValue={d.value ?? undefined}
+          onDateClick={d.onChange}
         />
-      ) : null}
+      ))}
       {dropdowns?.map((d, i) => (
         <Dropdown
           key={`${d.label ?? "dropdown"}-${i}`}

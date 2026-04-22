@@ -1,13 +1,5 @@
-import { Card, CardHeader, Table, TableColumn } from "../shared";
-
-export type BottomPanelProps = {
-  title: string;
-  color?: string;
-  summaryText: string;
-  summaryNumber: string;
-  extraColumn: { header: string; rows: string[] };
-  rows: { name: string; email: string }[];
-};
+import { Card, CardHeader, Table } from "../shared";
+import type { BottomPanelProps } from "@/components/type";
 
 export function BottomPanel({
   title,

@@ -13,11 +13,11 @@ import {
   CardHeader,
   FilterBar,
   PageTitle,
-  type DateRange,
 } from "@/components/shared";
+import type { DateRange, Order } from "@/components/type";
 import { ChangeChip } from "@/components/shared/ChangeChip";
-import { MONTHS } from "../../products/mock";
-import { ORDERS, type Order } from "../../orders/mock";
+import { MONTHS, ORDERS } from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 const PERFORMANCE = [
   {
@@ -63,14 +63,6 @@ function parseCurrency(s: string) {
 
 function fmtMoney(n: number) {
   return `$${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-}
-
-function formatDate(iso: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
 }
 
 function rowsFor(order: Order) {

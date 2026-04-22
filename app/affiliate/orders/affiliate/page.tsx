@@ -7,34 +7,19 @@ import {
   PageTitle,
   StatCard,
   Card,
+  ShippingStatusPill,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
-import { MONTHS } from "../../products/mock";
+import type {
+  DateRange,
+  Order,
+  TableColumn,
+} from "@/components/type";
 import {
   ORDERS,
-  SHIPPING_STATUS_CONFIG,
   SHIPPING_STATUS_OPTIONS,
-  type Order,
-  type ShippingStatus,
-} from "../mock";
-
-function formatDate(iso: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
-
-function ShippingStatusPill({ status }: { status: ShippingStatus }) {
-  return (
-    <span className="text-[14px] font-medium text-[#222125]">
-      {SHIPPING_STATUS_CONFIG[status].label}
-    </span>
-  );
-}
+} from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 export default function AffiliateOrdersPage() {
   const [search, setSearch] = useState("");

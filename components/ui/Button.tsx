@@ -1,7 +1,5 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
-
-export type ButtonVariant = "brand" | "outline";
-export type ButtonSize = "md" | "lg";
+import type { ButtonVariant, ButtonSize } from "@/components/type";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;

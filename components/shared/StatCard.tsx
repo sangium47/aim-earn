@@ -15,7 +15,7 @@ export function StatCard({ label, value, hint, className = "" }: StatCardProps) 
         className,
       ].join(" ")}
     >
-      <p className="text-xs md:text-sm font-semibold leading-[1.4] tracking-[0.02em] text-[#434343]">
+      <p className="whitespace-pre-line text-xs md:text-sm font-semibold leading-[1.4] tracking-[0.02em] text-[#434343]">
         {label}
       </p>
       <p className="text-lg md:text-[24px] font-medium leading-[1.2] tracking-[0.02em] text-ink-heading">

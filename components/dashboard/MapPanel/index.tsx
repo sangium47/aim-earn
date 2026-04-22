@@ -12,8 +12,8 @@ import {
   COUNTRIES_WITH_POPUP,
   COUNTRY_FILL_BY_ID,
   MAP_COLORS,
-  type CountryDatum,
 } from "./data";
+import type { CountryDatum } from "@/components/type";
 
 // World topojson served by world-atlas. Pin the version so the id scheme
 // (ISO 3166-1 numeric) doesn't drift.

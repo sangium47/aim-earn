@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardHeader, Dialog, Table, TableColumn } from "../shared";
+import { Card, CardHeader, Dialog, Table } from "../shared";
 import PopupTable from "./PopupTable";
-import {
-  memberProducts,
-  memberSummary,
-  type MemberProduct,
-} from "./PopupTable/data";
+import { memberProducts, memberSummary } from "./PopupTable/data";
+import type { MemberProduct, TableColumn } from "@/components/type";
 
 const TOP_AFFILIATES = [
   { id: "AF-001", name: "Sarah Chen", country: "SG", orders: 120 },
@@ -97,6 +94,7 @@ export function TopAffiliateMembers() {
           columns={columns}
           minWidth="min-w-[1080px]"
           onRowClick={() => setIsOpen(true)}
+          pagination={false}
         />
       </Card>
 

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { ProductMedia } from "./ProductInfoCard";
+import type { ProductMedia } from "@/components/type";
 
 type ProductThumbnailProps = {
   media: ProductMedia[];

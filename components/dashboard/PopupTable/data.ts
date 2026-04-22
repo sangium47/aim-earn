@@ -1,27 +1,8 @@
-export type AffiliateMember = {
-  name: string;
-  agentId: string;
-  country: string;
-  unitSold: number;
-  totalSales: string;
-  commission: string;
-  myCommission: string;
-};
-
-export type MemberProduct = {
-  orderID: string;
-  orderedDate: string;
-  status: string;
-  totalSales: string;
-  commission: string;
-  myCommission: string;
-};
-
-export type TableSummary = {
-  name: string;
-  description: string;
-  stats: { label: string; value: string }[];
-};
+import type {
+  AffiliateMember,
+  MemberProduct,
+  TableSummary,
+} from "@/components/type";
 
 export const agentSummary: TableSummary = {
   name: "AquaPure Filter",

@@ -4,20 +4,7 @@
 // ISO codes match `world-atlas`'s `countries-110m.json`, which uses ISO 3166-1
 // numeric codes as the `id` on each geography feature.
 
-export type CountryDatum = {
-  /** ISO 3166-1 numeric code (as string, matches world-atlas topojson ids) */
-  id: string;
-  /** ISO 3166-1 alpha-3 — only used internally, kept here for readability */
-  iso3: string;
-  name: string;
-  members: number;
-  /** Fill color on the map */
-  fill: string;
-  /** Lng/lat of the popup anchor (centroid-ish, tuned to match Figma) */
-  coordinates: [number, number];
-  /** Where the popup card sits relative to the anchor, in pixels */
-  labelOffset: { dx: number; dy: number };
-};
+import type { CountryDatum } from "@/components/type";
 
 // Palette sampled from the Figma — an amber/gold scale from light to dark.
 // Darker = larger affiliate base.

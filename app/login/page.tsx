@@ -1,40 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import {
-  RegistrationForm,
-  type RegistrationValues,
-} from "@/components/registration-form";
+import { useRouter } from "next/navigation";
+import { RegistrationForm } from "@/components/registration-form";
 import { OtpForm } from "@/components/otp-form";
-import { redirect } from "next/navigation";
+import type { RegistrationValues } from "@/components/type";
+import { USERS } from "@/components/mock";
+import {
+  landingPathForRole,
+  resolveUser,
+  setSession,
+} from "@/lib/session";
 
 type LoginState = "login" | "otp";
 
-type User = {
-  email: string;
-};
+function findUserByEmail(email: string) {
+  const normalized = email.trim().toLowerCase();
+  return USERS.find((u) => u.email.toLowerCase() === normalized);
+}
 
 /**
  * Login page that transitions to dashboard after successful authentication.
  */
 export default function LoginPage() {
+  const router = useRouter();
   const [loginState, setLoginState] = useState<LoginState>("login");
-  const [user, setUser] = useState<User | null>(null);
+  const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const handleSubmit = async (values: RegistrationValues) => {
+    setError(undefined);
+
+    if (!findUserByEmail(values.email)) {
+      setError("We couldn't find an account with that email.");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // On successful login, set user data and transition to dashboard
-      setUser({
-        email: values.email,
-      });
+      setEmail(values.email);
       setLoginState("otp");
-    } catch (error) {
-      console.error("Login failed:", error);
+    } catch (err) {
+      console.error("Login failed:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -42,11 +52,17 @@ export default function LoginPage() {
 
   const handleSocialSignIn = async (provider: string) => {
     console.log(`${provider} sign-in`);
-    // Simulate successful social login
-    setUser({
-      email: "john.doe@example.com",
-    });
+    setError(undefined);
+    setEmail("distributor@example.com");
     setLoginState("otp");
+  };
+
+  const handleOtpSubmit = () => {
+    // Mock flow: any 6-digit code is accepted. Resolve the user by email,
+    // write a session, and land on the role-appropriate dashboard.
+    const user = resolveUser(email);
+    setSession(user);
+    router.push(landingPathForRole(user.role));
   };
 
   if (loginState === "otp") {
@@ -54,9 +70,7 @@ export default function LoginPage() {
       <OtpForm
         onBack={() => setLoginState("login")}
         autoSubmit
-        onSubmit={() => {
-          redirect("/distributor");
-        }}
+        onSubmit={handleOtpSubmit}
       />
     );
   }
@@ -69,6 +83,7 @@ export default function LoginPage() {
           onGoogleSignIn={() => handleSocialSignIn("Google")}
           onAppleSignIn={() => handleSocialSignIn("Apple")}
           isSubmitting={isSubmitting}
+          error={error}
         />
       </div>
     </main>

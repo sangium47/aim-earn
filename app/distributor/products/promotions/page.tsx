@@ -8,42 +8,22 @@ import {
   FilterBar,
   PageTitle,
   Button,
+  StatusPill,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
+import type {
+  DateRange,
+  ProductPromotion,
+  TableColumn,
+} from "@/components/type";
 import { TrashIcon } from "@/components/icons";
 import {
   COUNTRY_OPTIONS,
-  MONTHS,
   PROMOTIONS,
   STATUS_CONFIG,
   STATUS_OPTIONS,
-  type Promotion,
-  type PromotionStatus,
-} from "../mock";
-
-function formatDate(iso: string) {
-  if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
-
-function StatusPill({ status }: { status: PromotionStatus }) {
-  const cfg = STATUS_CONFIG[status];
-  return (
-    <span className="inline-flex items-center gap-2 text-[14px] font-medium text-[#222125]">
-      <span
-        aria-hidden
-        className="inline-block size-2 rounded-full"
-        style={{ backgroundColor: cfg.dotColor }}
-      />
-      {cfg.label}
-    </span>
-  );
-}
+} from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 export default function PromotionPage() {
   const router = useRouter();
@@ -57,7 +37,7 @@ export default function PromotionPage() {
     setRows((prev) => prev.filter((p) => p.id !== id));
   };
 
-  const columns: TableColumn<Promotion>[] = [
+  const columns: TableColumn<ProductPromotion>[] = [
     {
       header: "Thumbnail",
       headerClassName: "w-[90px]",
@@ -103,7 +83,7 @@ export default function PromotionPage() {
     {
       header: "Status",
       headerClassName: "min-w-[140px]",
-      render: (item) => <StatusPill status={item.status} />,
+      render: (item) => <StatusPill {...STATUS_CONFIG[item.status]} />,
     },
     {
       header: "Action",

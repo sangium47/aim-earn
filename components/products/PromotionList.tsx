@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { AddPromotionButton } from "./AddPromotionButton";
 import { AddPromotionDialog } from "./AddPromotionDialog";
-import { PromotionRow, type Promotion } from "./PromotionRow";
+import { PromotionRow } from "./PromotionRow";
+import type { Promotion } from "@/components/type";
 
 type PromotionsListProps = {
   promotions: Promotion[];

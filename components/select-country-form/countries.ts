@@ -9,12 +9,7 @@
  * `app/**` or a dedicated `lib/countries.ts` as product needs grow.
  */
 
-export type Country = {
-  /** ISO 3166-1 alpha-2 code, uppercase. */
-  code: string;
-  /** Display name in English. */
-  name: string;
-};
+import type { Country } from "@/components/type";
 
 export const COUNTRIES: readonly Country[] = [
   { code: "CN", name: "China" },

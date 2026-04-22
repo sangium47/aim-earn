@@ -5,18 +5,19 @@ import { Flag, MailIcon } from "lucide-react";
 import {
   Breadcrumb,
   Button,
+  CountryPill,
   Dialog,
   FilterBar,
   PageTitle,
   Table,
-  type DateRange,
-  type TableColumn,
 } from "@/components/shared";
 
-import {
-  SendEmail,
-  type EmailTemplate,
-} from "@/components/affiliate-list/SendEmail";
+import { SendEmail } from "@/components/affiliate-list/SendEmail";
+import type {
+  DateRange,
+  EmailTemplate,
+  TableColumn,
+} from "@/components/type";
 
 type Affiliate = {
   id: string;
@@ -111,14 +112,6 @@ const AFFILIATES: Affiliate[] = [
     commission: "$200",
   },
 ];
-
-function CountryPill({ code }: { code: string }) {
-  return (
-    <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-[rgba(248,210,55,0.35)] px-2 text-xs font-medium tracking-[0.02em] text-ink">
-      {code}
-    </span>
-  );
-}
 
 const columns: TableColumn<Affiliate>[] = [
   {

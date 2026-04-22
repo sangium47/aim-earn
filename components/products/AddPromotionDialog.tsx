@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { Dialog } from "@/components/shared";
 import { MegaphoneIcon, SearchIcon } from "@/components/icons";
-import type { Promotion } from "./PromotionRow";
+import type { Promotion } from "@/components/type";
 
 type AddPromotionDialogProps = {
   open: boolean;

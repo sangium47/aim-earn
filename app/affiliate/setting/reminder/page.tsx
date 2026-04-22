@@ -8,9 +8,10 @@ import {
   Input,
   PageTitle,
   Table,
-  type TableColumn,
 } from "@/components/shared";
-import { MONTHS } from "../../products/mock";
+import type { TableColumn } from "@/components/type";
+import { } from "@/components/mock";
+import { formatDate } from "@/components/util";
 
 type Reminder = {
   key: string;
@@ -46,14 +47,6 @@ const INACTIVE_REMINDERS: Reminder[] = [
     updatedAt: "2026-03-18",
   },
 ];
-
-function formatDate(iso: string) {
-  if (!iso) return "—";
-  const [y, m, d] = iso.split("-");
-  const monthIndex = Number(m) - 1;
-  if (!y || !d || Number.isNaN(monthIndex) || !MONTHS[monthIndex]) return iso;
-  return `${d} ${MONTHS[monthIndex]} ${y}`;
-}
 
 export default function ReminderSettingPage() {
   const [rows, setRows] = useState(INACTIVE_REMINDERS);
@@ -101,7 +94,7 @@ export default function ReminderSettingPage() {
     {
       header: "Last Updated",
       headerClassName: "min-w-[160px]",
-      render: (item) => formatDate(item.updatedAt),
+      render: (item) => formatDate(item.updatedAt, "—"),
     },
   ];
 

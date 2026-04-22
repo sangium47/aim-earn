@@ -6,23 +6,7 @@ import {
   type KeyboardEvent,
   type ChangeEvent,
 } from "react";
-
-export type OtpInputProps = {
-  /** The current OTP value as a string. Must be <= `length`. */
-  value: string;
-  /** Fires on every digit change. Receives the new combined string. */
-  onChange: (next: string) => void;
-  /** Number of digit cells. Defaults to 6. */
-  length?: number;
-  /** Fires when the user has filled all cells. */
-  onComplete?: (code: string) => void;
-  /** Disables input and paste. */
-  disabled?: boolean;
-  /** Accessible label describing the field to screen readers. */
-  ariaLabel?: string;
-  /** Optional id used for the first input (for <label htmlFor>). */
-  id?: string;
-};
+import type { OtpInputProps } from "@/components/type";
 
 /**
  * OTP digit input.

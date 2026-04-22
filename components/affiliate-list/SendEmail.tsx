@@ -3,11 +3,7 @@
 import { useId, useState } from "react";
 import { Button } from "@/components/shared/Button";
 import { ChevronDownIcon } from "../icons";
-
-export type EmailTemplate = {
-  id: string;
-  name: string;
-};
+import type { EmailTemplate } from "@/components/type";
 
 type SendEmailProps = {
   recipientCount: number;

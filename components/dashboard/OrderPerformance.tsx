@@ -1,33 +1,12 @@
 import { Card, CardHeader } from "../shared";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
+import type { OrderStatusDatum } from "@/components/type";
 
 const ORDER_DONUT = [
   { label: "Paid", value: "20,000 (25%)", color: "#f8d237" },
   { label: "Delivered", value: "80,874 (75%)", color: "#1e1e1e" },
   { label: "Shipped", value: "80,874 (25%)", color: "#b9b9b9" },
 ];
-
-export type OrderStatusDatum = {
-  /** Legend label, e.g. "Paid" */
-  name: string;
-  /** Numeric value used to size the segment in the donut */
-  value: number;
-  /** Hex fill for both the segment and the legend dot */
-  color: string;
-  /** Pre-formatted "20,000 (25%)" string shown under the legend label */
-  displayLabel: string;
-};
-
-export type OrderStatusChartProps = {
-  /** Centered title, e.g. "Total Orders" */
-  centerTitle?: string;
-  /** Centered value, e.g. "100,874" */
-  centerValue: string;
-  /** Segments, in clockwise order starting from 12 o'clock */
-  data: OrderStatusDatum[];
-  /** Optional className passed to the outer wrapper */
-  className?: string;
-};
 
 const centerTitle = "Total Orders";
 const centerValue = "100,874";

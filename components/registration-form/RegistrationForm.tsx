@@ -1,26 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { InputField } from "./InputField";
 import { SocialButton } from "./SocialButton";
 import { AppleIcon, GoogleIcon } from "@/components/icons";
-
-export type RegistrationValues = {
-  email: string;
-};
-
-export type RegistrationFormProps = {
-  /** Called with form values when the user submits the email form. */
-  onSubmit?: (values: RegistrationValues) => void | Promise<void>;
-  /** Called when the user clicks "Continue with Gmail". */
-  onGoogleSignIn?: () => void;
-  /** Called when the user clicks "Continue with Apple ID". */
-  onAppleSignIn?: () => void;
-  /** Disables the primary submit button and shows pending state. */
-  isSubmitting?: boolean;
-  /** Optional override for the outer wrapper. */
-  className?: string;
-};
+import type { RegistrationFormProps } from "@/components/type";
 
 /**
  * Registration form component.
@@ -36,6 +21,7 @@ export function RegistrationForm({
   onGoogleSignIn,
   onAppleSignIn,
   isSubmitting = false,
+  error,
   className,
 }: RegistrationFormProps) {
   const [email, setEmail] = useState("");
@@ -76,8 +62,26 @@ export function RegistrationForm({
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? "email-error" : undefined}
               required
             />
+            {/* Register links — land on the register pages with a return-to
+                query so those pages can send the user back to /login. */}
+            <div className="flex w-full flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <Link
+                href="/register-distributor?page=/login"
+                className="text-sm font-medium underline flex-1 leading-[1.4] tracking-figma text-ink hover:underline"
+              >
+                Register to be Distributor
+              </Link>
+              <Link
+                href="/register-affiliate?page=/login"
+                className="text-sm font-medium underline flex-1 text-right border-l border-line leading-[1.4] tracking-figma text-ink hover:underline"
+              >
+                Register to be Affiliator
+              </Link>
+            </div>
             <button
               type="submit"
               disabled={isSubmitting}
@@ -91,6 +95,16 @@ export function RegistrationForm({
             >
               {isSubmitting ? "Sending OTP.." : "Login"}
             </button>
+
+            {error ? (
+              <p
+                id="email-error"
+                role="alert"
+                className="-mt-2 text-sm font-medium leading-[1.4] text-[#ef4444]"
+              >
+                {error}
+              </p>
+            ) : null}
           </form>
 
           {/* "Or" divider */}

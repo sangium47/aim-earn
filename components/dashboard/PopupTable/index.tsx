@@ -1,8 +1,7 @@
-import { Table, type TableColumn } from "@/components/shared";
 import { StatCard } from "./StatCard";
-import { type AffiliateMember, type TableSummary } from "./data";
 import type { ReactNode } from "react";
 import { XIcon } from "@/components/icons";
+import type { TableSummary } from "@/components/type";
 
 type PopupTableProps = {
   summary?: TableSummary;

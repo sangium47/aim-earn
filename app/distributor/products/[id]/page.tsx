@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { Breadcrumb, PageTitle, Switch } from "@/components/shared";
-import {
-  ProductInfoCard,
-  type ProductInfo,
-} from "@/components/products/ProductInfoCard";
+import { ProductInfoCard } from "@/components/products/ProductInfoCard";
 import { CommissionSection } from "@/components/products/CommissionSection";
-import type { CountryCommission } from "@/components/products/CountryCommissionRow";
 import { ProductActions } from "@/components/products/ProductActions";
-import type { Promotion } from "@/components/products/PromotionRow";
+import type {
+  CountryCommission,
+  ProductInfo,
+  Promotion,
+} from "@/components/type";
 
 const promotions: Promotion[] = [
   {

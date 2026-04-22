@@ -1,11 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
-
-export type TabItem<TValue extends string = string> = {
-  value: TValue;
-  label: ReactNode;
-};
+import type { TabItem } from "@/components/type";
 
 type TabsProps<TValue extends string> = {
   items: TabItem<TValue>[];
@@ -26,7 +21,10 @@ export function Tabs<TValue extends string>({
   className = "",
 }: TabsProps<TValue>) {
   return (
-    <div role="tablist" className={`flex items-start ${className}`}>
+    <div
+      role="tablist"
+      className={`flex items-start overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
       {items.map((tab) => {
         const active = tab.value === value;
         return (
@@ -36,8 +34,10 @@ export function Tabs<TValue extends string>({
             role="tab"
             aria-selected={active}
             onClick={() => onChange(tab.value)}
-            className={`inline-flex items-center justify-center rounded-xl px-4 py-1.5 text-[16px] font-medium leading-[1.4] tracking-[0.32px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f8d237] focus-visible:ring-offset-2 ${
-              active ? "bg-[#f8d237] text-[#222125]" : "text-[#5f5f5f] hover:text-[#222125]"
+            className={`inline-flex shrink-0 items-center justify-center rounded-xl px-4 py-1.5 text-[16px] font-medium leading-[1.4] tracking-[0.32px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f8d237] focus-visible:ring-offset-2 ${
+              active
+                ? "bg-[#f8d237] text-[#222125]"
+                : "text-[#5f5f5f] hover:text-[#222125]"
             }`}
           >
             {tab.label}

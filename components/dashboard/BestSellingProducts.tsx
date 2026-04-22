@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardHeader, Dialog, Table, TableColumn } from "../shared";
+import { Card, CardHeader, Dialog, Table } from "../shared";
 import PopupTable from "./PopupTable";
-import {
-  affiliateMembers,
-  agentSummary,
-  type AffiliateMember,
-} from "./PopupTable/data";
+import { affiliateMembers, agentSummary } from "./PopupTable/data";
+import type { AffiliateMember, TableColumn } from "@/components/type";
 
 const BEST_SELLING = [
   {
@@ -122,6 +119,7 @@ export function BestSellingProducts() {
           columns={columns}
           minWidth="min-w-[1080px]"
           onRowClick={() => setIsOpen(true)}
+          pagination={false}
         />
       </Card>
 

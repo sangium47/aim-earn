@@ -1,3 +1,74 @@
+@import "react-calendar/dist/Calendar.css";
+@import "react-date-picker/dist/DatePicker.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* DateRangePicker — react-date-picker visual overrides */
+.date-range-datepicker .react-date-picker__wrapper {
+  height: 2.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #f4f5f8;
+  padding: 0 0.75rem;
+}
+.date-range-datepicker .react-date-picker__inputGroup {
+  min-width: 0;
+  padding: 0;
+}
+.date-range-datepicker .react-date-picker__inputGroup__input {
+  color: #222125;
+  font-size: 0.875rem;
+  outline: none;
+}
+.date-range-datepicker .react-date-picker__inputGroup__input:invalid {
+  background: transparent;
+}
+.date-range-datepicker .react-date-picker__inputGroup__divider,
+.date-range-datepicker .react-date-picker__inputGroup__leadingZero {
+  color: #222125;
+  font-size: 0.875rem;
+}
+.date-range-datepicker .react-date-picker__button {
+  padding: 0 0 0 0.5rem;
+}
+.date-range-datepicker .react-date-picker__button:enabled:hover .react-date-picker__button__icon,
+.date-range-datepicker .react-date-picker__button:enabled:focus .react-date-picker__button__icon {
+  stroke: #222125;
+}
+/* Calendar popup — portaled to <body>, so these selectors are global. */
+.react-date-picker__calendar {
+  z-index: 60;
+}
+.react-date-picker__calendar .react-calendar {
+  font-family: inherit;
+  border-radius: 0.75rem;
+  border-color: #e7e7e7;
+  box-shadow: 0 6px 20px rgba(12, 12, 13, 0.12);
+}
+
+@media (max-width: 767px) {
+  /* Dim backdrop so the centered calendar reads as a modal. */
+  .react-date-picker__calendar.react-date-picker__calendar--open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+  }
+  .react-date-picker__calendar.react-date-picker__calendar--open {
+    position: fixed !important;
+    inset: 0 !important;
+    margin: auto !important;
+    transform: none !important;
+    width: min(92vw, 340px) !important;
+    height: fit-content !important;
+    max-height: 90vh !important;
+  }
+  .react-date-picker__calendar.react-date-picker__calendar--open
+    .react-calendar {
+    width: 100%;
+    max-width: 100%;
+  }
+}

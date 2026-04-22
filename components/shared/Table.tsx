@@ -1,17 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Dropdown } from "./Dropdown";
-
-export type TableColumn<T> = {
-  header: string;
-  key?: keyof T;
-  render?: (item: T, index: number) => ReactNode;
-  headerClassName?: string;
-  cellClassName?: string;
-  borderRight?: boolean;
-};
+import type { TableColumn } from "@/components/type";
 
 type TableProps<T> = {
   data: T[];
@@ -134,7 +126,7 @@ export function Table<T>({
   const pageNumbers = getPageNumbers(page, totalPages);
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl">
+    <div className="w-full flex flex-col overflow-hidden rounded-2xl border border-line">
       <div className="max-w-full overflow-x-auto">
         <table
           className={`w-full border-collapse ${minWidth ? minWidth : ""} ${className}`}

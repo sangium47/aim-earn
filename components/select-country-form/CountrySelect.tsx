@@ -10,25 +10,8 @@ import {
   type KeyboardEvent,
 } from "react";
 import { ChevronDownIcon } from "@/components/icons";
-import { COUNTRIES, type Country } from "./countries";
-
-export type CountrySelectProps = {
-  /** Currently selected country codes. */
-  value: string[];
-  /** Fires with the new array when selection changes. */
-  onChange: (next: string[]) => void;
-  /** Override the country list. Defaults to the project's standard list. */
-  countries?: readonly Country[];
-  /** Placeholder shown when no country is selected. */
-  placeholder?: string;
-  /** Accessible label linking the listbox to its visible <label>. */
-  labelId?: string;
-  /** Field id used by <label htmlFor>. */
-  id?: string;
-  disabled?: boolean;
-  /** Maximum number of countries that can be selected. Defaults to 4. */
-  maxSelection?: number;
-};
+import { COUNTRIES } from "./countries";
+import type { CountrySelectProps } from "@/components/type";
 
 /**
  * Multi-select dropdown matching the Figma "Select" field in node 137:56229.
@@ -54,6 +37,7 @@ export function CountrySelect({
   id,
   disabled = false,
   maxSelection = 4,
+  position = "bottom",
 }: CountrySelectProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -201,7 +185,10 @@ export function CountrySelect({
 
       {open ? (
         <div
-          className="absolute left-0 right-0 top-full z-10 mt-1 overflow-hidden rounded-lg border border-line bg-surface-card shadow-lg"
+          className={[
+            "absolute left-0 right-0 z-10 overflow-hidden rounded-lg border border-line bg-surface-card shadow-lg",
+            position === "top" ? "bottom-full mb-1" : "top-full mt-1",
+          ].join(" ")}
           onKeyDown={handleListKey}
         >
           <div className="border-b border-line p-2">

@@ -1,12 +1,4 @@
-export type CommissionTier = {
-  label: string;
-  percent: string; // "10%", "5%", etc.
-};
-
-export type CountryCommission = {
-  country: string;
-  tiers: CommissionTier[];
-};
+import type { CountryCommission } from "@/components/type";
 
 type CountryCommissionRowProps = {
   data: CountryCommission;

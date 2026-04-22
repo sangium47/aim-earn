@@ -13,10 +13,10 @@ import {
   StatCard,
   Switch,
   Table,
-  type TableColumn,
 } from "@/components/shared";
+import type { Product, TableColumn } from "@/components/type";
 import { ProductActions } from "@/components/products/ProductActions";
-import { PRODUCTS, type Product } from "./mock";
+import { PRODUCTS } from "@/components/mock";
 
 const code = "XX0025";
 export default function ProductPage() {

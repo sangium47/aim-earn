@@ -1,26 +1,4 @@
-import type {
-  InputHTMLAttributes,
-  ReactNode,
-  TextareaHTMLAttributes,
-} from "react";
-
-type BaseProps = {
-  leading?: ReactNode;
-  trailing?: ReactNode;
-  wrapperClassName?: string;
-};
-
-type SingleLineProps = BaseProps &
-  Omit<InputHTMLAttributes<HTMLInputElement>, keyof BaseProps> & {
-    multiline?: false;
-  };
-
-type MultilineProps = BaseProps &
-  Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, keyof BaseProps> & {
-    multiline: true;
-  };
-
-export type InputProps = SingleLineProps | MultilineProps;
+import type { InputProps } from "@/components/type";
 
 export function Input(props: InputProps) {
   if (props.multiline) {

@@ -5,24 +5,10 @@ import { Button } from "@/components/ui";
 import { Dropdown } from "@/components/shared";
 import { CountryChip } from "./CountryChip";
 import { CountrySelect } from "./CountrySelect";
-import { COUNTRIES, findCountry, type Country } from "./countries";
+import { COUNTRIES, findCountry } from "./countries";
+import type { SelectCountryFormProps } from "@/components/type";
 
 const DEFAULT_MAX_SELECTION = 3;
-
-export type SelectCountryFormProps = {
-  /** Called with the selected ISO codes when the user clicks Continue. */
-  onSubmit?: (countries: string[]) => void | Promise<void>;
-  /** Override the country list. Defaults to the project's standard list. */
-  countries?: readonly Country[];
-  /** Initial selection. Useful for editing previously-saved preferences. */
-  defaultValue?: string[];
-  /** Disables inputs and the Continue button. */
-  isSubmitting?: boolean;
-  /** Override outer className. */
-  className?: string;
-  /** Maximum number of countries the user may select. Defaults to 3. */
-  maxSelection?: number;
-};
 
 /**
  * Select Country form.
