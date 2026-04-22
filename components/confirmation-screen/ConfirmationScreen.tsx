@@ -23,7 +23,7 @@ export function ConfirmationScreen({
       className={["w-full bg-surface-card", className ?? ""].join(" ")}
       aria-labelledby="confirmation-heading"
     >
-      <div className="flex min-h-[840px] flex-col items-center justify-center gap-8 px-6 pb-24 pt-8">
+      <div className="flex md:min-h-[840px] flex-col items-center justify-center gap-8 px-6 pb-24 pt-8">
         <div className="text-ink" aria-hidden="true">
           {icon ?? <CheckCircleIcon className="h-[88px] w-[88px]" />}
         </div>

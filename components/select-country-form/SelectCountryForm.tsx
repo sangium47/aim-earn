@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState, type FormEvent } from "react";
-import { Button } from "@/components/ui";
-import { Dropdown } from "@/components/shared";
+import { Button, Dropdown } from "@/components/shared";
 import { CountryChip } from "./CountryChip";
 import { CountrySelect } from "./CountrySelect";
 import { COUNTRIES, findCountry } from "./countries";
@@ -60,7 +59,13 @@ export function SelectCountryForm({
           <p className="text-base font-medium leading-[1.4] tracking-figma text-ink-secondary">
             {isSingleSelect
               ? "Select the country you operate in."
-              : `Select all countries you operate in. (Maximum ${maxSelection} countries)`}
+              : `Select all countries you operate in.`}
+            {!isSingleSelect && maxSelection ? (
+              <>
+                <br />
+                {`Maximum ${maxSelection} countries`}
+              </>
+            ) : null}
           </p>
         </header>
 
@@ -135,8 +140,9 @@ export function SelectCountryForm({
           {onSubmit ? (
             <Button
               type="submit"
-              variant="brand"
+              variant="primary"
               size="md"
+              className="w-full"
               disabled={selected.length === 0 || isSubmitting}
             >
               {isSubmitting ? "Saving…" : "Continue"}

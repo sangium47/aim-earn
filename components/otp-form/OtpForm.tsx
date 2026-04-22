@@ -39,7 +39,7 @@ export function OtpForm({
       className={["w-full bg-surface-card", className ?? ""].join(" ")}
       aria-labelledby="otp-heading"
     >
-      <div className="flex min-h-[840px] flex-col items-center justify-center gap-8 px-6 pb-24 pt-8">
+      <div className="flex md:min-h-[840px] flex-col items-center justify-center gap-8 px-6 pb-24 pt-8">
         {/* Heading */}
         <header className="flex w-full flex-col items-center justify-center gap-2 text-center">
           <h2

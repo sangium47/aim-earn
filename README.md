@@ -29,12 +29,15 @@ import { RegistrationForm } from "@/components/registration-form";
 
 <RegistrationForm
   onSubmit={async ({ firstName, lastName, email }) => {
-    await fetch("/api/register", { method: "POST", body: JSON.stringify({ firstName, lastName, email }) });
+    await fetch("/api/register", {
+      method: "POST",
+      body: JSON.stringify({ firstName, lastName, email }),
+    });
   }}
   onGoogleSignIn={() => signIn("google")}
   onFacebookSignIn={() => signIn("facebook")}
   onAppleSignIn={() => signIn("apple")}
-/>
+/>;
 ```
 
 ## Fonts
@@ -56,20 +59,20 @@ utilities point at the loaded family names (see `tailwind.config.ts`
 All Figma `--sds-*` variables from the selected node are mapped in
 `tailwind.config.ts`. Key mappings:
 
-| Figma variable                             | Tailwind token          |
-| ------------------------------------------ | ----------------------- |
-| `--sds-color-background-brand-default`     | `bg-brand` (#f8d237)    |
-| `Text/Brand/On Brand`                      | `text-brand-foreground` |
-| `--sds-color-background-default-default`   | `bg-surface-input`      |
-| `--sds-color-text-default-default`         | `text-ink`              |
-| `--sds-color-text-brand-secondary`         | `text-ink-secondary`    |
-| `Text/Base/Tertiary`                       | `text-ink-tertiary`     |
-| `--sds-color-border-default-default`       | `border-line`           |
-| `--sds-color-border-neutral-tertiary`      | `border-line-tertiary`  |
-| `BG` (page)                                | `bg-surface-page`       |
-| `--sds-size-radius-200` (8px)              | `rounded-lg`            |
-| `--sds-size-radius-full`                   | `rounded-full`          |
-| outer card radius (24px)                   | `rounded-card`          |
+| Figma variable                           | Tailwind token          |
+| ---------------------------------------- | ----------------------- |
+| `--sds-color-background-brand-default`   | `bg-brand` (#f8d237)    |
+| `Text/Brand/On Brand`                    | `text-brand-foreground` |
+| `--sds-color-background-default-default` | `bg-surface-input`      |
+| `--sds-color-text-default-default`       | `text-ink`              |
+| `--sds-color-text-brand-secondary`       | `text-ink-secondary`    |
+| `Text/Base/Tertiary`                     | `text-ink-tertiary`     |
+| `--sds-color-border-default-default`     | `border-line`           |
+| `--sds-color-border-neutral-tertiary`    | `border-line-tertiary`  |
+| `BG` (page)                              | `bg-surface-page`       |
+| `--sds-size-radius-200` (8px)            | `rounded-lg`            |
+| `--sds-size-radius-full`                 | `rounded-full`          |
+| outer card radius (24px)                 | `rounded-card`          |
 
 ## Decisions that needed inference
 
@@ -87,7 +90,7 @@ All Figma `--sds-*` variables from the selected node are mapped in
    `-apple-system` on the Apple button.
 3. **Responsive behavior**: the Figma frame is desktop-only. The component
    itself uses `w-full max-w-[354px]` for the form column so it collapses
-   cleanly on narrower viewports. The outer card hits `min-h-[840px]` on
+   cleanly on narrower viewports. The outer card hits `md:min-h-[840px]` on
    desktop and shrinks to content on mobile.
 4. **Form accessibility**: labels wired via `htmlFor`/`id`, heading
    associated with the section via `aria-labelledby`, "Or" given

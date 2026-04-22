@@ -4,10 +4,6 @@ import type {
   TextareaHTMLAttributes,
 } from "react";
 
-// Button (components/ui/Button.tsx)
-export type ButtonVariant = "brand" | "outline";
-export type ButtonSize = "md" | "lg";
-
 // Breadcrumb (components/shared/Breadcrumb.tsx)
 export type BreadcrumbItem = { label: string; href?: string };
 
