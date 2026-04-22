@@ -11,6 +11,7 @@ import {
   resolveUser,
   setSession,
 } from "@/lib/session";
+import { useRedirectIfAuthed } from "@/lib/use-session-guard";
 
 type LoginState = "login" | "otp";
 
@@ -24,6 +25,7 @@ function findUserByEmail(email: string) {
  */
 export default function LoginPage() {
   const router = useRouter();
+  const ready = useRedirectIfAuthed();
   const [loginState, setLoginState] = useState<LoginState>("login");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,6 +66,8 @@ export default function LoginPage() {
     setSession(user);
     router.push(landingPathForRole(user.role));
   };
+
+  if (!ready) return null;
 
   if (loginState === "otp") {
     return (

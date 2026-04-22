@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import "@fontsource-variable/urbanist";
 import "@fontsource-variable/nunito-sans";
 import "./globals.css";
+import { buildMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = {
-  title: "Aim Earn",
-  description: "Aim Earn — Distributor & Affiliator Platform",
+  ...buildMetadata("Aim Earn", "Aim Earn — Distributor & Affiliator Platform"),
+  icons: { icon: "/images/logo-black.svg" },
 };
 
 export default function RootLayout({

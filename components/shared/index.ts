@@ -1,4 +1,3 @@
-export { SelectPill } from "./SelectPill";
 export { SectionTitle } from "./SectionTitle";
 export { SectionRow } from "./SectionRow";
 export { Divider } from "./Divider";

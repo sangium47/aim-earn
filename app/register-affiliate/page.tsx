@@ -4,11 +4,13 @@ import { Suspense, useState } from "react";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { InputField } from "@/components/registration-form/InputField";
 import { SelectCountryForm } from "@/components/select-country-form";
+import { useRedirectIfAuthed } from "@/lib/use-session-guard";
 
 type RegisterState = "form" | "country";
 
 function RegisterAffiliateContent() {
   const router = useRouter();
+  const ready = useRedirectIfAuthed();
   const searchParams = useSearchParams();
   const cancelHref = searchParams.get("page");
   const [registerState, setRegisterState] = useState<RegisterState>("form");
@@ -21,6 +23,8 @@ function RegisterAffiliateContent() {
       router.push(cancelHref);
     }
   };
+
+  if (!ready) return null;
 
   if (registerState === "country") {
     return (
