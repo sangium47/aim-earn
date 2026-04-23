@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { ConfirmationScreen } from "@/components/confirmation-screen";
@@ -20,27 +19,13 @@ function ConfirmationContent() {
 
   return (
     <ConfirmationScreen
-      title="Confirmation Email Sent"
+      title="Request Submitted"
       description={
         <>
-          A confirmation email has been successfully sent to {masked}.
+          Thank you. Your request has been submitted and
           <br />
-          Please follow the instructions in the email to proceed.
+          is being reviewed by an administrator.
         </>
-      }
-      action={
-        <div className="flex items-center justify-center">
-          <Link
-            href="/payment-detail"
-            className="text-sm font-medium text-ink-secondary text-center underline-offset-4 hover:text-ink"
-          >
-            <span className="underline">Go to payment detail</span>
-            <br />
-            <span className="text-red-300 text-xs">
-              (For testing UI, not production)
-            </span>
-          </Link>
-        </div>
       }
     />
   );
