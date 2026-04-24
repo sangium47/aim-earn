@@ -1204,6 +1204,16 @@ export const USERS: User[] = [
     lastName: "Wong",
     countries: ["SG", "MY", "TH"],
     role: "distributor",
+    status: "APPROVED",
+  },
+  {
+    profileImageURL: "https://i.pravatar.cc/128?img=15",
+    email: "pending-distributor@example.com",
+    firstName: "Chris",
+    lastName: "Tan",
+    countries: ["SG"],
+    role: "distributor",
+    status: "PENDING",
   },
   {
     profileImageURL: "https://i.pravatar.cc/128?img=32",

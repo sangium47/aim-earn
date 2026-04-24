@@ -582,6 +582,7 @@ export type Distributor = {
 
 // Session user
 export type UserRole = "distributor" | "affiliate" | "admin";
+export type DistributorApprovalStatus = "APPROVED" | "PENDING" | "REJECTED";
 export type User = {
   profileImageURL: string;
   email: string;
@@ -590,4 +591,6 @@ export type User = {
   /** ISO 3166-1 alpha-2 codes. Affiliate and admin hold a single country. */
   countries: string[] | null;
   role: UserRole;
+  /** Approval status for distributors. Other roles should leave this unset. */
+  status?: DistributorApprovalStatus;
 };

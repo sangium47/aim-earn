@@ -7,7 +7,7 @@ import { OtpForm } from "@/components/otp-form";
 import type { RegistrationValues } from "@/components/type";
 import { USERS } from "@/components/mock";
 import {
-  landingPathForRole,
+  landingPathForUser,
   resolveUser,
   setSession,
 } from "@/lib/session";
@@ -61,10 +61,11 @@ export default function LoginPage() {
 
   const handleOtpSubmit = () => {
     // Mock flow: any 6-digit code is accepted. Resolve the user by email,
-    // write a session, and land on the role-appropriate dashboard.
+    // write a session, and land on the role-appropriate dashboard. PENDING
+    // distributors are routed to /distributor/pending-approval instead.
     const user = resolveUser(email);
     setSession(user);
-    router.push(landingPathForRole(user.role));
+    router.push(landingPathForUser(user));
   };
 
   if (!ready) return null;

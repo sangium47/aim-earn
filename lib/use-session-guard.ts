@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { UserRole } from "@/components/type";
-import { getSession, landingPathForRole } from "./session";
+import { getSession, landingPathForUser } from "./session";
 
 /**
  * Guard a role-scoped page. Redirects unauthenticated users to /login and
- * authenticated users with a mismatched role to their own landing page.
- * Returns true once the current session is confirmed to match `required`.
+ * authenticated users with a mismatched role — or a PENDING distributor —
+ * to their own landing page. Returns true once the current session is
+ * confirmed to match `required` and (for distributors) APPROVED.
  */
 export function useRoleGuard(required: UserRole): boolean {
   const router = useRouter();
@@ -21,7 +22,15 @@ export function useRoleGuard(required: UserRole): boolean {
       return;
     }
     if (session.role !== required) {
-      router.replace(landingPathForRole(session.role));
+      router.replace(landingPathForUser(session));
+      return;
+    }
+    if (
+      session.role === "distributor" &&
+      session.status &&
+      session.status !== "APPROVED"
+    ) {
+      router.replace(landingPathForUser(session));
       return;
     }
     setAllowed(true);
@@ -42,7 +51,7 @@ export function useRedirectIfAuthed(): boolean {
   useEffect(() => {
     const session = getSession();
     if (session) {
-      router.replace(landingPathForRole(session.role));
+      router.replace(landingPathForUser(session));
       return;
     }
     setReady(true);

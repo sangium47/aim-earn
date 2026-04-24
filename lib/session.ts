@@ -47,3 +47,18 @@ export function landingPathForRole(role: UserRole): string {
       return "/affiliate";
   }
 }
+
+/**
+ * Resolve the post-login landing URL for a user, honoring distributor
+ * approval status. PENDING / REJECTED distributors land on
+ * `/distributor/pending-approval` instead of the dashboard.
+ */
+export function landingPathForUser(user: User): string {
+  if (
+    user.role === "distributor" &&
+    (user.status === "PENDING" || user.status === "REJECTED")
+  ) {
+    return "/distributor/pending-approval";
+  }
+  return landingPathForRole(user.role);
+}
