@@ -1,0 +1,5 @@
+{
+  "enabledPlugins": {
+    "aws-amplify@agent-plugins-for-aws": true
+  }
+}

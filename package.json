@@ -12,10 +12,9 @@
   "dependencies": {
     "@fontsource-variable/nunito-sans": "^5.2.7",
     "@fontsource-variable/urbanist": "^5.2.7",
-    "i": "^0.3.7",
+    "aws-amplify": "^6.16.4",
     "lucide-react": "^1.8.0",
     "next": "^15.0.0",
-    "npm": "^11.12.1",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-date-picker": "^12.0.2",
@@ -24,15 +23,27 @@
     "react-simple-maps": "^3.0.0",
     "recharts": "^3.8.1"
   },
+  "overrides": {
+    "react-simple-maps": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
+  },
   "devDependencies": {
+    "@aws-amplify/backend": "^1.22.0",
+    "@aws-amplify/backend-cli": "^1.8.2",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/react-is": "^19.2.0",
     "@types/react-simple-maps": "^3.0.6",
     "autoprefixer": "^10.4.20",
+    "aws-cdk-lib": "^2.234.1",
+    "constructs": "^10.6.0",
+    "esbuild": "^0.28.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
