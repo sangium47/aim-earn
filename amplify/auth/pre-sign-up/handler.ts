@@ -28,11 +28,14 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
     throw new Error('No email provided by social provider.');
   }
 
+  // Escape double quotes in email to prevent filter injection
+  const safeEmail = email.replace(/"/g, '\\"');
+
   // Check if a user with this email already exists (native sign-up)
   const existingUsers = await cognito.send(
     new ListUsersCommand({
       UserPoolId: USER_POOL_ID,
-      Filter: `email = "${email}"`,
+      Filter: `email = "${safeEmail}"`,
       Limit: 1,
     })
   );
@@ -40,9 +43,16 @@ export const handler: PreSignUpTriggerHandler = async (event) => {
   if (existingUsers.Users && existingUsers.Users.length > 0) {
     const existingUser = existingUsers.Users[0];
 
-    // Link the social identity to the existing user
     // event.userName format for social: "Google_1234567890" or "SignInWithApple_..."
-    const [providerName, providerUserId] = event.userName.split('_');
+    const underscoreIndex = event.userName.indexOf('_');
+    if (underscoreIndex === -1) {
+      throw new Error(
+        `Invalid provider user name format: ${event.userName}`
+      );
+    }
+
+    const providerName = event.userName.substring(0, underscoreIndex);
+    const providerUserId = event.userName.substring(underscoreIndex + 1);
 
     const providerMap: Record<string, string> = {
       Google: 'Google',

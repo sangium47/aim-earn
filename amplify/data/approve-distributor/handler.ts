@@ -2,43 +2,14 @@ import {
   DynamoDBClient,
   GetItemCommand,
   TransactWriteItemsCommand,
-  ScanCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
+import { generateUniqueInviteCode } from '../lib/code-generator';
 
 const ddb = new DynamoDBClient();
 
 const USER_TABLE = process.env.USER_TABLE_NAME!;
 const DISTRIBUTOR_TABLE = process.env.DISTRIBUTOR_TABLE_NAME!;
-
-function generateCode(length = 8): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-
-async function generateUniqueInviteCode(): Promise<string> {
-  let code: string;
-  let attempts = 0;
-  do {
-    code = generateCode();
-    attempts++;
-    if (attempts > 10) throw new Error('Failed to generate unique invite code');
-    const result = await ddb.send(
-      new ScanCommand({
-        TableName: USER_TABLE,
-        FilterExpression: 'inviteCode = :code',
-        ExpressionAttributeValues: marshall({ ':code': code }),
-        Limit: 1,
-      })
-    );
-    if (!result.Items || result.Items.length === 0) break;
-  } while (true);
-  return code;
-}
 
 export const handler = async (event: {
   arguments: { distributorId: string };
@@ -68,7 +39,7 @@ export const handler = async (event: {
   const now = new Date().toISOString();
 
   // Generate inviteCode for the distributor's User record
-  const inviteCode = await generateUniqueInviteCode();
+  const inviteCode = await generateUniqueInviteCode(ddb, USER_TABLE);
 
   // Atomic: update Distributor.status + User.inviteCode in one transaction
   await ddb.send(

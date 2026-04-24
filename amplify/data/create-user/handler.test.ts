@@ -12,6 +12,7 @@ vi.mock('@aws-sdk/client-dynamodb', () => {
     PutItemCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'PutItem' }); } },
     DeleteItemCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'DeleteItem' }); } },
     ScanCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Scan' }); } },
+    QueryCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Query' }); } },
   };
 });
 

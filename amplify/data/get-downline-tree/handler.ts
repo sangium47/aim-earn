@@ -1,4 +1,4 @@
-import { DynamoDBClient, GetItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, GetItemCommand, QueryCommand } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
 const ddb = new DynamoDBClient();
@@ -16,6 +16,35 @@ interface DownlineNode {
   role: string;
 }
 
+/**
+ * Query all users in a distributor's network using the distributorId GSI.
+ * Handles pagination for large networks (>1MB results).
+ */
+async function queryAllUsersByDistributorId(
+  distributorId: string
+): Promise<Record<string, unknown>[]> {
+  const allUsers: Record<string, unknown>[] = [];
+  let lastKey: Record<string, unknown> | undefined;
+
+  do {
+    const result = await ddb.send(
+      new QueryCommand({
+        TableName: USER_TABLE,
+        IndexName: 'distributorId',
+        KeyConditionExpression: 'distributorId = :did',
+        ExpressionAttributeValues: marshall({ ':did': distributorId }),
+        ExclusiveStartKey: lastKey as any,
+      })
+    );
+
+    const items = (result.Items ?? []).map((item) => unmarshall(item));
+    allUsers.push(...items);
+    lastKey = result.LastEvaluatedKey as Record<string, unknown> | undefined;
+  } while (lastKey);
+
+  return allUsers;
+}
+
 export const handler = async (event: {
   arguments: { rootEmail: string };
   identity?: {
@@ -24,8 +53,12 @@ export const handler = async (event: {
 }) => {
   const { rootEmail } = event.arguments;
 
-  // Security: caller must be the root user or an admin
+  // Security: require authenticated caller
   const callerEmail = event.identity?.claims?.email;
+  if (!callerEmail) {
+    throw new Error('Authentication required.');
+  }
+
   const callerGroups = event.identity?.claims?.['cognito:groups'] ?? [];
   const isAdmin = callerGroups.includes('ADMIN');
 
@@ -47,43 +80,44 @@ export const handler = async (event: {
 
   const rootUser = unmarshall(rootResult.Item);
 
-  // Get all users in this distributor's network
-  const allUsersResult = await ddb.send(
-    new ScanCommand({
-      TableName: USER_TABLE,
-      FilterExpression: 'distributorId = :did',
-      ExpressionAttributeValues: marshall({
-        ':did': rootUser.distributorId,
-      }),
-    })
+  // Query all users in this distributor's network via GSI (paginated)
+  const allUsers = await queryAllUsersByDistributorId(
+    rootUser.distributorId as string
   );
 
-  const allUsers = (allUsersResult.Items ?? []).map((item) => unmarshall(item));
+  // Build parent→children index for O(n) BFS instead of O(n²) filter
+  const childrenByParent = new Map<string, typeof allUsers>();
+  for (const user of allUsers) {
+    const parent = (user.parentEmail as string) || '';
+    if (!childrenByParent.has(parent)) childrenByParent.set(parent, []);
+    childrenByParent.get(parent)!.push(user);
+  }
 
-  // Build tree: BFS from rootEmail, only include descendants
+  // BFS from rootEmail, collect descendants only
   const descendants: DownlineNode[] = [];
   const queue = [rootEmail];
   const visited = new Set<string>([rootEmail]);
 
   while (queue.length > 0) {
     const currentEmail = queue.shift()!;
-    const children = allUsers.filter(
-      (u) => u.parentEmail === currentEmail && !visited.has(u.email)
-    );
+    const children = childrenByParent.get(currentEmail) ?? [];
 
     for (const child of children) {
-      visited.add(child.email);
+      const childEmail = child.email as string;
+      if (visited.has(childEmail)) continue;
+
+      visited.add(childEmail);
       descendants.push({
-        email: child.email,
-        firstName: child.firstName ?? null,
-        lastName: child.lastName ?? null,
-        depth: child.depth ?? 0,
-        parentEmail: child.parentEmail ?? null,
-        inviteCode: child.inviteCode ?? null,
-        countries: child.countries ?? null,
-        role: child.role,
+        email: childEmail,
+        firstName: (child.firstName as string) ?? null,
+        lastName: (child.lastName as string) ?? null,
+        depth: (child.depth as number) ?? 0,
+        parentEmail: (child.parentEmail as string) ?? null,
+        inviteCode: (child.inviteCode as string) ?? null,
+        countries: (child.countries as string[]) ?? null,
+        role: child.role as string,
       });
-      queue.push(child.email);
+      queue.push(childEmail);
     }
   }
 

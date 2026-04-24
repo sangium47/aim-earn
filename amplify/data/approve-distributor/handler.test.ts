@@ -9,7 +9,7 @@ vi.mock('@aws-sdk/client-dynamodb', () => {
     DynamoDBClient: class { send = mockDdbSend; },
     GetItemCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'GetItem' }); } },
     TransactWriteItemsCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'TransactWrite' }); } },
-    ScanCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Scan' }); } },
+    QueryCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Query' }); } },
   };
 });
 
@@ -71,7 +71,7 @@ describe('approveDistributor handler', () => {
     // TransactWriteItems
     mockDdbSend.mockResolvedValueOnce({});
 
-    const result = await handler({ arguments: { distributorId: 'dist1' } });
+    const result = await handler({ arguments: { distributorId: 'dist1' } }) as Record<string, unknown>;
 
     expect(result.status).toBe('APPROVED');
     expect(result.distributorId).toBe('dist1');

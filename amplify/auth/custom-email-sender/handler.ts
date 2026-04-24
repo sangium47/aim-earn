@@ -1,18 +1,26 @@
-import {
-  buildClient,
-  CommitmentPolicy,
-} from '@aws-crypto/client-node';
-import { KmsKeyringNode } from '@aws-crypto/kms-keyring-node';
-
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY!;
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'noreply@aimearn.com';
 const KMS_KEY_ARN = process.env.KMS_KEY_ARN!;
 
-const { decrypt } = buildClient(
-  CommitmentPolicy.REQUIRE_ENCRYPT_ALLOW_DECRYPT
-);
+// Lazy-init crypto client to reduce cold start time
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let decryptFn: any = null;
+let keyringInstance: unknown = null;
 
-const keyring = new KmsKeyringNode({ keyIds: [KMS_KEY_ARN] });
+async function getDecryptor() {
+  if (!decryptFn) {
+    const { buildClient, CommitmentPolicy } = await import(
+      '@aws-crypto/client-node'
+    );
+    const { KmsKeyringNode } = await import('@aws-crypto/kms-keyring-node');
+    const { decrypt } = buildClient(
+      CommitmentPolicy.REQUIRE_ENCRYPT_ALLOW_DECRYPT
+    );
+    decryptFn = decrypt;
+    keyringInstance = new KmsKeyringNode({ keyIds: [KMS_KEY_ARN] });
+  }
+  return { decrypt: decryptFn, keyring: keyringInstance! };
+}
 
 interface CustomEmailSenderEvent {
   triggerSource: string;
@@ -27,11 +35,12 @@ interface CustomEmailSenderEvent {
 }
 
 async function decryptCode(encryptedCode: string): Promise<string> {
+  const { decrypt, keyring } = await getDecryptor();
   const { plaintext } = await decrypt(
     keyring,
     Buffer.from(encryptedCode, 'base64')
   );
-  return plaintext.toString('utf-8');
+  return Buffer.from(plaintext).toString('utf-8');
 }
 
 async function sendEmail(
@@ -62,8 +71,7 @@ async function sendEmail(
 export const handler = async (event: CustomEmailSenderEvent) => {
   const email = event.request.userAttributes.email;
   if (!email) {
-    console.error('No email in user attributes');
-    return;
+    throw new Error('No email in user attributes');
   }
 
   const code = await decryptCode(event.request.code);

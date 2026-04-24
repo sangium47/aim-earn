@@ -10,6 +10,7 @@ import {
   CognitoIdentityProviderClient,
   AdminAddUserToGroupCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
+import { generateCode, generateUniqueInviteCode } from '../lib/code-generator';
 
 const ddb = new DynamoDBClient();
 const cognito = new CognitoIdentityProviderClient();
@@ -18,44 +19,21 @@ const USER_TABLE = process.env.USER_TABLE_NAME!;
 const DISTRIBUTOR_TABLE = process.env.DISTRIBUTOR_TABLE_NAME!;
 const USER_POOL_ID = process.env.USER_POOL_ID!;
 
-function generateCode(length = 8): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_STRING_LENGTH = 255;
+
+async function generateUniqueDistributorId(): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const code = generateCode();
+    const result = await ddb.send(
+      new GetItemCommand({
+        TableName: DISTRIBUTOR_TABLE,
+        Key: marshall({ distributorId: code }),
+      })
+    );
+    if (!result.Item) return code;
   }
-  return result;
-}
-
-async function isCodeUnique(
-  table: string,
-  field: string,
-  code: string
-): Promise<boolean> {
-  const result = await ddb.send(
-    new ScanCommand({
-      TableName: table,
-      FilterExpression: '#f = :code',
-      ExpressionAttributeNames: { '#f': field },
-      ExpressionAttributeValues: marshall({ ':code': code }),
-      Limit: 1,
-    })
-  );
-  return (result.Items?.length ?? 0) === 0;
-}
-
-async function generateUniqueCode(
-  table: string,
-  field: string
-): Promise<string> {
-  let code: string;
-  let attempts = 0;
-  do {
-    code = generateCode();
-    attempts++;
-    if (attempts > 10) throw new Error('Failed to generate unique code');
-  } while (!(await isCodeUnique(table, field, code)));
-  return code;
+  throw new Error('Failed to generate unique distributorId');
 }
 
 export const handler = async (event: {
@@ -75,18 +53,34 @@ export const handler = async (event: {
   const { email, role, firstName, lastName, countries, inviteCode } =
     event.arguments;
 
-  // 1. Role whitelist — only DISTRIBUTOR or AFFILIATE
+  // 1. Input validation
+  if (!email || !EMAIL_REGEX.test(email)) {
+    throw new Error('Invalid email format.');
+  }
+  if (!firstName || firstName.length > MAX_STRING_LENGTH) {
+    throw new Error('Invalid firstName.');
+  }
+  if (!lastName || lastName.length > MAX_STRING_LENGTH) {
+    throw new Error('Invalid lastName.');
+  }
+  if (
+    !Array.isArray(countries) ||
+    countries.some((c) => typeof c !== 'string' || c.length > MAX_STRING_LENGTH)
+  ) {
+    throw new Error('Invalid countries.');
+  }
+
+  // 2. Role whitelist — only DISTRIBUTOR or AFFILIATE
   if (role !== 'DISTRIBUTOR' && role !== 'AFFILIATE') {
     throw new Error('Invalid role. Only DISTRIBUTOR or AFFILIATE allowed.');
   }
 
-  // 2. Verify caller — authenticated user's email must match
-  // Skip for IAM callers (post-confirmation Lambda has no claims)
+  // 3. Verify caller — authenticated user's email must match
   if (event.identity?.claims?.email && event.identity.claims.email !== email) {
     throw new Error('Caller email does not match the provided email.');
   }
 
-  // 3. Idempotent check — reject if user already exists
+  // 4. Idempotent check — reject if user already exists
   const existing = await ddb.send(
     new GetItemCommand({
       TableName: USER_TABLE,
@@ -105,11 +99,7 @@ export const handler = async (event: {
 
   try {
     if (role === 'DISTRIBUTOR') {
-      // 4. Distributor flow
-      const distributorId = await generateUniqueCode(
-        DISTRIBUTOR_TABLE,
-        'distributorId'
-      );
+      const distributorId = await generateUniqueDistributorId();
 
       // Create Distributor record (status: PENDING)
       await ddb.send(
@@ -167,7 +157,7 @@ export const handler = async (event: {
       return user;
     }
 
-    // 5. Affiliate flow
+    // Affiliate flow
     if (!inviteCode) {
       throw new Error('Invite code is required for affiliate registration.');
     }
@@ -212,7 +202,7 @@ export const handler = async (event: {
     }
 
     // Generate inviteCode for the new affiliate
-    const newInviteCode = await generateUniqueCode(USER_TABLE, 'inviteCode');
+    const newInviteCode = await generateUniqueInviteCode(ddb, USER_TABLE);
 
     const user = {
       email,
@@ -248,7 +238,8 @@ export const handler = async (event: {
     return user;
   } catch (error) {
     // Rollback: delete partially created records before re-throwing
-    console.error('createUser failed, attempting rollback:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    console.error('createUser failed, attempting rollback:', errMsg);
     try {
       if (createdUserEmail) {
         await ddb.send(
@@ -267,7 +258,11 @@ export const handler = async (event: {
         );
       }
     } catch (rollbackError) {
-      console.error('Rollback failed:', rollbackError);
+      const rbMsg =
+        rollbackError instanceof Error
+          ? rollbackError.message
+          : String(rollbackError);
+      console.error('Rollback failed:', rbMsg);
     }
     throw error;
   }

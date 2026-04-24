@@ -86,7 +86,7 @@ const schema = a.schema({
       distributor: a.belongsTo("Distributor", "distributorId"),
     })
     .identifier(["email"])
-    .secondaryIndexes((index) => [index("inviteCode")])
+    .secondaryIndexes((index) => [index("inviteCode"), index("distributorId")])
     .disableOperations(["create", "delete"])
     .authorization((allow) => [
       allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),

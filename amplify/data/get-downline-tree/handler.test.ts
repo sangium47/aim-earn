@@ -8,7 +8,7 @@ vi.mock('@aws-sdk/client-dynamodb', () => {
   return {
     DynamoDBClient: class { send = mockDdbSend; },
     GetItemCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'GetItem' }); } },
-    ScanCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Scan' }); } },
+    QueryCommand: class { constructor(public input: unknown) { Object.assign(this, input, { _type: 'Query' }); } },
   };
 });
 
