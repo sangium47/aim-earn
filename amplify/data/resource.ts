@@ -29,9 +29,24 @@ const schema = a.schema({
           allow.guest().to(["read"]),
           allow.group("ADMIN"),
         ]),
-      role: a.string(),
-      distributorId: a.string(),
-      parentEmail: a.string(),
+      role: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+        ]),
+      distributorId: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+        ]),
+      parentEmail: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+        ]),
       inviteCode: a
         .string()
         .authorization((allow) => [
@@ -39,7 +54,12 @@ const schema = a.schema({
           allow.guest().to(["read"]),
           allow.group("ADMIN"),
         ]),
-      depth: a.integer(),
+      depth: a
+        .integer()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+        ]),
       firstName: a
         .string()
         .authorization((allow) => [
@@ -74,30 +94,79 @@ const schema = a.schema({
       allow.guest().to(["get"]),
     ]),
 
-  // TODO: Add field-level auth to Distributor model
-  // - ownerEmail: admin only
-  // - status: owner read + admin + guest read
-  // - bank fields: owner + admin only (hidden from guests)
   Distributor: a
     .model({
-      distributorId: a.string().required(),
-      ownerEmail: a.string().required(),
-      status: a.string().required(),
+      distributorId: a
+        .string()
+        .required()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+          allow.guest().to(["read"]),
+        ]),
+      ownerEmail: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+        ]),
+      status: a
+        .string()
+        .required()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email").to(["read"]),
+          allow.group("ADMIN"),
+          allow.guest().to(["read"]),
+        ]),
       firstName: a.string(),
       lastName: a.string(),
       countries: a.string().array(),
-      bankName: a.string(),
-      bankAccountNumber: a.string(),
-      bankAccountName: a.string(),
-      bankBranch: a.string(),
-      paymentSlipPath: a.string(),
-      paymentNotes: a.string(),
+      bankName: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
+      bankAccountNumber: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
+      bankAccountName: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
+      bankBranch: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
+      paymentSlipPath: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
+      paymentNotes: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+          allow.group("ADMIN"),
+        ]),
       // Relationship
       users: a.hasMany("User", "distributorId"),
     })
     .identifier(["distributorId"])
     .disableOperations(["create", "delete"])
-    .authorization((allow) => [allow.authenticated(), allow.guest().to(["read"])]),
+    .authorization((allow) => [
+      allow.ownerDefinedIn("ownerEmail").identityClaim("email"),
+      allow.group("ADMIN"),
+      allow.guest().to(["read"]),
+    ]),
 
   // ---------- Custom mutations ----------
 

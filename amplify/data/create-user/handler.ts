@@ -2,6 +2,7 @@ import {
   DynamoDBClient,
   GetItemCommand,
   PutItemCommand,
+  DeleteItemCommand,
   ScanCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
@@ -98,6 +99,10 @@ export const handler = async (event: {
 
   const now = new Date().toISOString();
 
+  // Track created records for rollback
+  let createdDistributorId: string | null = null;
+  let createdUserEmail: string | null = null;
+
   try {
     if (role === 'DISTRIBUTOR') {
       // 4. Distributor flow
@@ -125,6 +130,7 @@ export const handler = async (event: {
           ),
         })
       );
+      createdDistributorId = distributorId;
 
       // Create User record (inviteCode: null until admin approval)
       const user = {
@@ -147,6 +153,7 @@ export const handler = async (event: {
           Item: marshall(user, { removeUndefinedValues: true }),
         })
       );
+      createdUserEmail = email;
 
       // Assign Cognito group
       await cognito.send(
@@ -227,6 +234,7 @@ export const handler = async (event: {
         Item: marshall(user, { removeUndefinedValues: true }),
       })
     );
+    createdUserEmail = email;
 
     // Assign Cognito group
     await cognito.send(
@@ -239,9 +247,28 @@ export const handler = async (event: {
 
     return user;
   } catch (error) {
-    // Rollback: attempt to clean up partially created records
-    // Best-effort — log errors but don't mask the original
+    // Rollback: delete partially created records before re-throwing
     console.error('createUser failed, attempting rollback:', error);
+    try {
+      if (createdUserEmail) {
+        await ddb.send(
+          new DeleteItemCommand({
+            TableName: USER_TABLE,
+            Key: marshall({ email: createdUserEmail }),
+          })
+        );
+      }
+      if (createdDistributorId) {
+        await ddb.send(
+          new DeleteItemCommand({
+            TableName: DISTRIBUTOR_TABLE,
+            Key: marshall({ distributorId: createdDistributorId }),
+          })
+        );
+      }
+    } catch (rollbackError) {
+      console.error('Rollback failed:', rollbackError);
+    }
     throw error;
   }
 };

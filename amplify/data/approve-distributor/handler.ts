@@ -1,9 +1,8 @@
 import {
   DynamoDBClient,
   GetItemCommand,
-  UpdateItemCommand,
+  TransactWriteItemsCommand,
   ScanCommand,
-  PutItemCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 
@@ -71,24 +70,34 @@ export const handler = async (event: {
   // Generate inviteCode for the distributor's User record
   const inviteCode = await generateUniqueInviteCode();
 
-  // Update Distributor.status = APPROVED
+  // Atomic: update Distributor.status + User.inviteCode in one transaction
   await ddb.send(
-    new UpdateItemCommand({
-      TableName: DISTRIBUTOR_TABLE,
-      Key: marshall({ distributorId }),
-      UpdateExpression: 'SET #status = :status, updatedAt = :now',
-      ExpressionAttributeNames: { '#status': 'status' },
-      ExpressionAttributeValues: marshall({ ':status': 'APPROVED', ':now': now }),
-    })
-  );
-
-  // Update User.inviteCode for the distributor's owner
-  await ddb.send(
-    new UpdateItemCommand({
-      TableName: USER_TABLE,
-      Key: marshall({ email: distributor.ownerEmail }),
-      UpdateExpression: 'SET inviteCode = :code, updatedAt = :now',
-      ExpressionAttributeValues: marshall({ ':code': inviteCode, ':now': now }),
+    new TransactWriteItemsCommand({
+      TransactItems: [
+        {
+          Update: {
+            TableName: DISTRIBUTOR_TABLE,
+            Key: marshall({ distributorId }),
+            UpdateExpression: 'SET #status = :status, updatedAt = :now',
+            ExpressionAttributeNames: { '#status': 'status' },
+            ExpressionAttributeValues: marshall({
+              ':status': 'APPROVED',
+              ':now': now,
+            }),
+          },
+        },
+        {
+          Update: {
+            TableName: USER_TABLE,
+            Key: marshall({ email: distributor.ownerEmail }),
+            UpdateExpression: 'SET inviteCode = :code, updatedAt = :now',
+            ExpressionAttributeValues: marshall({
+              ':code': inviteCode,
+              ':now': now,
+            }),
+          },
+        },
+      ],
     })
   );
 

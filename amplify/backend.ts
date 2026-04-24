@@ -6,8 +6,9 @@ import { getDownlineTreeFn } from './data/get-downline-tree/resource';
 import { approveDistributorFn } from './data/approve-distributor/resource';
 import { preSignUp } from './auth/pre-sign-up/resource';
 import { customEmailSender } from './auth/custom-email-sender/resource';
-import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement, Effect, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 const backend = defineBackend({
   auth,
@@ -104,3 +105,30 @@ cfnUserPoolClient.explicitAuthFlows = [
   'ALLOW_USER_SRP_AUTH',
   'ALLOW_REFRESH_TOKEN_AUTH',
 ];
+
+// ---- KMS + Custom Email Sender (SendGrid) ----
+
+// Create KMS key for Cognito code encryption
+const kmsKey = new Key(backend.auth.resources.userPool, 'CognitoKmsKey', {
+  description: 'KMS key for Cognito custom email sender code encryption',
+  alias: 'aimearn-cognito-email-sender',
+});
+
+// Grant Lambda permission to decrypt with this key
+kmsKey.grantDecrypt(customEmailSenderLambda);
+
+// Pass KMS key ARN to Lambda
+customEmailSenderLambda.addEnvironment('KMS_KEY_ARN', kmsKey.keyArn);
+
+// Wire custom email sender on the UserPool via CDK override
+cfnUserPool.addPropertyOverride('LambdaConfig.CustomEmailSender', {
+  LambdaArn: customEmailSenderLambda.functionArn,
+  LambdaVersion: 'V1_0',
+});
+cfnUserPool.addPropertyOverride('LambdaConfig.KMSKeyID', kmsKey.keyArn);
+
+// Grant Cognito permission to invoke the custom email sender Lambda
+customEmailSenderLambda.addPermission('CognitoInvoke', {
+  principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
+  sourceArn: userPool.userPoolArn,
+});
