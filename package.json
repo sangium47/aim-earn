@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-crypto/client-node": "^5.0.0",
+    "@aws-crypto/kms-keyring-node": "^5.0.0",
     "@fontsource-variable/nunito-sans": "^5.2.7",
     "@fontsource-variable/urbanist": "^5.2.7",
     "aws-amplify": "^6.16.4",
@@ -32,6 +34,7 @@
   "devDependencies": {
     "@aws-amplify/backend": "^1.22.0",
     "@aws-amplify/backend-cli": "^1.8.2",
+    "@types/aws-lambda": "^8.10.161",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

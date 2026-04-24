@@ -102,11 +102,13 @@ After any successful sign-in (OTP or social), determine where to redirect:
 ### Task 4.1: Distributor Registration (`app/register-distributor/page.tsx`)
 
 **Email OTP flow:**
+- [ ] Validate email does not exist before signUp (query Cognito or show error from `UsernameExistsException`)
 - [ ] Form submit → call `signUp({ username: email, options: { userAttributes: { email, given_name, family_name, 'custom:role': 'DISTRIBUTOR' }, autoSignIn: { authFlowType: 'USER_AUTH' } } })`
 - [ ] Handle `CONFIRM_SIGN_UP` → transition to OTP verification
-- [ ] On `confirmSignUp` → `autoSignIn` → redirect to `/distributor/pending-approval`
+- [ ] On `confirmSignUp` → `autoSignIn` → transition to country selection step
+- [ ] After country selection → call `createUser` mutation with `role: 'DISTRIBUTOR'`, `countries`
+- [ ] On success → redirect to `/distributor/pending-approval`
 - [ ] Handle `UsernameExistsException` → show "Email already registered" error
-- [ ] Pass selected countries via user attributes or `clientMetadata`
 
 **Social sign-in flow:**
 - [ ] Add Google/Apple social sign-in buttons to registration form
@@ -130,7 +132,8 @@ New route for affiliate registration via invite link. Supports invites from both
 
 **Email OTP flow:**
 - [ ] Form submit → call `signUp` with `custom:role: 'AFFILIATE'`, `custom:inviteCode`
-- [ ] OTP verification → `confirmSignUp` → `autoSignIn` → `/affiliate`
+- [ ] OTP verification → `confirmSignUp` → `autoSignIn`
+- [ ] Call `createUser` mutation with `role: 'AFFILIATE'`, `inviteCode`, `countries` → `/affiliate`
 
 **Social sign-in flow:**
 - [ ] Add Google/Apple buttons

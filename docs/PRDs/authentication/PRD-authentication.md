@@ -26,7 +26,7 @@ Replace the mock localStorage-based authentication with a production-ready syste
 |------|-------------|------------|------------------|
 | **Admin** | Manual (AWS Console) | Immediate | Manually added to `ADMIN` Cognito group |
 | **Distributor** | Self-registration at `/register-distributor` | Requires admin approval | Auto-added to `DISTRIBUTOR` group on sign-up; status = `PENDING` until approved |
-| **Affiliate** | Invite-only via `/invite/{distributorId}` | Immediate | Auto-added to `AFFILIATE` group on sign-up; linked to inviting distributor |
+| **Affiliate** | Invite-only via `/invite/{inviteCode}` | Immediate | Auto-added to `AFFILIATE` group on sign-up; linked to inviting user (distributor or affiliate) |
 
 ## 4. Authentication Methods
 
@@ -92,11 +92,12 @@ This ensures:
 User visits /register-distributor
   → Option A: Email OTP
       → Fills form (first name, last name, email)
-      → Selects countries
+      → Validates email does not exist
       → Amplify signUp (custom:role = DISTRIBUTOR)
       → Receives OTP email via SendGrid
       → Enters OTP code → confirmSignUp
-      → `createUser` Lambda:
+      → Selects countries
+      → createUser Lambda:
           - Validates role (DISTRIBUTOR only)
           - Creates User in DynamoDB
           - Creates Distributor record (status: PENDING, generates distributorId)
@@ -136,16 +137,12 @@ Inviter (distributor or affiliate) shares link: /invite/{inviteCode}
       → Selects country (max 1)
       → Amplify signUp (custom:role = AFFILIATE, custom:inviteCode from lookup)
       → Receives OTP email via SendGrid
-      → Enters OTP code → confirmSignUp
-      → `createUser` Lambda:
+      → Enters OTP code → confirmSignUp → autoSignIn
+      → Frontend calls `createUser` mutation with role: AFFILIATE, inviteCode, countries
           - Validates inviteCode (inviter must exist, root distributor APPROVED)
-          - Creates User in DynamoDB:
-              parentEmail = inviter.email
-              distributorId = inviter.distributorId (inherited)
-              depth = inviter.depth + 1
-              inviteCode = newly generated
+          - Creates User in DynamoDB (parentEmail, distributorId, depth, inviteCode)
           - Adds user to AFFILIATE Cognito group
-      → Auto sign-in → Redirects to /affiliate dashboard
+      → Redirects to /affiliate dashboard
 
   → Option B: Social sign-in (Google / Apple)
       → Selects country first
@@ -355,19 +352,15 @@ Defined via `a.handler.function(createUserFn)` in the Amplify Data schema.
 
 **Input:** `email`, `role`, `firstName`, `lastName`, `countries`, `inviteCode` (nullable — required for affiliates, null for distributors)
 
-**Auth:** Authenticated users (user pool) + IAM (for Post-Confirmation Lambda caller)
+**Auth:** Authenticated users (user pool)
 
-### 7.1a Post-Confirmation Lambda Trigger (Thin Proxy)
+### 7.1a User Creation Flow (Frontend-Driven)
 
-Fires after Cognito confirms a new user (email OTP verified). This Lambda is a **thin proxy** that calls the `createUser` mutation via AppSync IAM auth.
+All user creation is frontend-driven. After sign-up confirmation (Email OTP or social OAuth), the frontend calls the `createUser` mutation directly. No Cognito Post-Confirmation trigger is used — this avoids circular CDK stack dependencies and unifies all registration flows into a single pattern.
 
-1. Read `custom:role` and other user attributes from the Cognito event
-2. Call `createUser` AppSync mutation via IAM, passing: email, role, firstName, lastName, countries, distributorId
-3. All validation and group assignment is handled by the `createUser` handler
+**Flow:** signUp → confirmSignUp → autoSignIn → frontend calls `createUser` → dashboard
 
-**Note:** This trigger does NOT fire for social (federated) sign-ins. Social users call `createUser` directly from the frontend (see 7.4).
-
-**Group guarantee:** After this Lambda completes successfully, the user is always in either the `DISTRIBUTOR` or `AFFILIATE` Cognito group. The `cognito:groups` claim will be populated in subsequent token refreshes.
+**Group guarantee:** After `createUser` completes successfully, the user is always in either the `DISTRIBUTOR` or `AFFILIATE` Cognito group. The `cognito:groups` claim will be populated in subsequent token refreshes.
 
 ### 7.2 Custom Email Sender Lambda
 
@@ -455,8 +448,6 @@ Atomically approves a distributor and generates their invite code.
 | `components/ConfigureAmplify.tsx` | Client-side `Amplify.configure()` with SSR |
 | `app/invite/[code]/page.tsx` | Affiliate invite registration page |
 | `app/distributor/pending-approval/page.tsx` | "Waiting for approval" page |
-| `amplify/auth/post-confirmation/resource.ts` | Post-Confirmation Lambda (thin proxy → calls `createUser` mutation) |
-| `amplify/auth/post-confirmation/handler.ts` | Reads Cognito event, calls AppSync `createUser` via IAM |
 | `amplify/data/create-user/resource.ts` | `createUser` Lambda handler definition |
 | `amplify/data/create-user/handler.ts` | Unified user creation: validation, DynamoDB writes, Cognito group assignment |
 | `amplify/auth/custom-email-sender/resource.ts` | SendGrid sender definition |

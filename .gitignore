@@ -10,9 +10,13 @@ yarn-debug.log*
 yarn-error.log*
 
 # amplify
-.amplify
+.amplify/
 amplify_outputs*
 amplifyconfiguration*
+
+# build artifacts
+dist/
+build/
 
 # claude
 .claude/settings.local.json

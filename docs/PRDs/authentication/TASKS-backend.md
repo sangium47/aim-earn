@@ -50,7 +50,6 @@
 - [ ] Configure `logoutUrls`: `['http://localhost:3000/login', 'https://your-domain.com/login']`
 
 ### Task 2.3: Wire Triggers (`amplify/auth/resource.ts`)
-- [ ] Wire `postConfirmation` trigger
 - [ ] Wire `preSignUp` trigger
 - [ ] Wire `senders.email` (SendGrid custom email sender)
 - [ ] Configure `access` permissions for triggers
@@ -91,20 +90,8 @@ Unified mutation for both email OTP (via Post-Confirmation) and social sign-in (
 - [ ] Grant `cognito-idp:AdminAddUserToGroup` via `backend.auth.resources.userPool.grant()`
 - [ ] Grant DynamoDB read/write to User and Distributor tables
 
-### Task 3.2: Post-Confirmation Lambda (Thin Proxy)
-Fires after email OTP sign-up confirmation. Calls `createUser` via AppSync IAM.
-
-**Files:**
-- [ ] `amplify/auth/post-confirmation/resource.ts` — `defineFunction`
-- [ ] `amplify/auth/post-confirmation/handler.ts`
-
-**Handler logic:**
-- [ ] Read `custom:role` and user attributes from Cognito event
-- [ ] Call `createUser` AppSync mutation via IAM auth
-- [ ] Pass: `email`, `role`, `firstName`, `lastName`, `countries`, `distributorId`
-
-**Permissions:**
-- [ ] Grant IAM access to AppSync API (`backend.data.resources.graphqlApi.grant*()`)
+### Task 3.2: [REMOVED] Post-Confirmation Lambda
+Removed to avoid circular CDK stack dependency (auth → function → data → auth). Frontend calls `createUser` mutation directly after sign-up for all flows (distributor, affiliate, social).
 
 ### Task 3.3: Pre Sign-Up Lambda (Account Linking)
 Fires before Cognito creates a new user. Handles social sign-in linking/registration.
@@ -252,8 +239,6 @@ Atomically approves a distributor and generates their invite code.
 | `amplify/data/approve-distributor/resource.ts` | `approveDistributor` Lambda definition |
 | `amplify/data/approve-distributor/handler.ts` | Approve + generate inviteCode |
 | `amplify/auth/resource.ts` | Auth config: OTP, Google, Apple, groups, triggers |
-| `amplify/auth/post-confirmation/resource.ts` | Post-Confirmation Lambda definition |
-| `amplify/auth/post-confirmation/handler.ts` | Thin proxy → calls `createUser` via IAM |
 | `amplify/auth/pre-sign-up/resource.ts` | Pre Sign-Up Lambda definition |
 | `amplify/auth/pre-sign-up/handler.ts` | Account linking + social sign-up |
 | `amplify/auth/custom-email-sender/resource.ts` | SendGrid sender definition |

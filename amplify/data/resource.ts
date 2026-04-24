@@ -1,53 +1,150 @@
-import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
+import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
+import { createUserFn } from "./create-user/resource";
+import { getDownlineTreeFn } from "./get-downline-tree/resource";
+import { approveDistributorFn } from "./approve-distributor/resource";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
 const schema = a.schema({
-  Todo: a
+  // ---------- Custom types ----------
+
+  DownlineNode: a.customType({
+    email: a.string().required(),
+    firstName: a.string(),
+    lastName: a.string(),
+    depth: a.integer().required(),
+    parentEmail: a.string(),
+    inviteCode: a.string(),
+    countries: a.string().array(),
+    role: a.string().required(),
+  }),
+
+  // ---------- Models ----------
+
+  User: a
     .model({
-      content: a.string(),
+      email: a
+        .string()
+        .required()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.guest().to(["read"]),
+          allow.group("ADMIN"),
+        ]),
+      role: a.string(),
+      distributorId: a.string(),
+      parentEmail: a.string(),
+      inviteCode: a
+        .string()
+        .authorization((allow) => [
+          allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+          allow.guest().to(["read"]),
+          allow.group("ADMIN"),
+        ]),
+      depth: a.integer(),
+      firstName: a
+        .string()
+        .authorization((allow) => [
+          allow
+            .ownerDefinedIn("email")
+            .identityClaim("email")
+            .to(["read", "update"]),
+          allow.group("ADMIN"),
+        ]),
+      lastName: a
+        .string()
+        .authorization((allow) => [
+          allow
+            .ownerDefinedIn("email")
+            .identityClaim("email")
+            .to(["read", "update"]),
+          allow.group("ADMIN"),
+        ]),
+      countries: a.string().array(),
+      // Self-referencing relationships
+      parent: a.belongsTo("User", "parentEmail"),
+      children: a.hasMany("User", "parentEmail"),
+      // Distributor relationship
+      distributor: a.belongsTo("Distributor", "distributorId"),
     })
-    .authorization((allow) => [allow.guest()]),
+    .identifier(["email"])
+    .secondaryIndexes((index) => [index("inviteCode")])
+    .disableOperations(["create", "delete"])
+    .authorization((allow) => [
+      allow.ownerDefinedIn("email").identityClaim("email").to(["read"]),
+      allow.group("ADMIN"),
+      allow.guest().to(["get"]),
+    ]),
+
+  // TODO: Add field-level auth to Distributor model
+  // - ownerEmail: admin only
+  // - status: owner read + admin + guest read
+  // - bank fields: owner + admin only (hidden from guests)
+  Distributor: a
+    .model({
+      distributorId: a.string().required(),
+      ownerEmail: a.string().required(),
+      status: a.string().required(),
+      firstName: a.string(),
+      lastName: a.string(),
+      countries: a.string().array(),
+      bankName: a.string(),
+      bankAccountNumber: a.string(),
+      bankAccountName: a.string(),
+      bankBranch: a.string(),
+      paymentSlipPath: a.string(),
+      paymentNotes: a.string(),
+      // Relationship
+      users: a.hasMany("User", "distributorId"),
+    })
+    .identifier(["distributorId"])
+    .disableOperations(["create", "delete"])
+    .authorization((allow) => [allow.authenticated(), allow.guest().to(["read"])]),
+
+  // ---------- Custom mutations ----------
+
+  createUser: a
+    .mutation()
+    .arguments({
+      email: a.string().required(),
+      role: a.string().required(),
+      firstName: a.string().required(),
+      lastName: a.string().required(),
+      countries: a.string().array().required(),
+      inviteCode: a.string(),
+    })
+    .returns(a.ref("User"))
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(createUserFn)),
+
+  approveDistributor: a
+    .mutation()
+    .arguments({
+      distributorId: a.string().required(),
+    })
+    .returns(a.ref("Distributor"))
+    .authorization((allow) => [allow.group("ADMIN")])
+    .handler(a.handler.function(approveDistributorFn)),
+
+  // ---------- Custom queries ----------
+
+  getDownlineTree: a
+    .query()
+    .arguments({
+      rootEmail: a.string().required(),
+    })
+    .returns(a.ref("DownlineNode").array())
+    .authorization((allow) => [allow.authenticated()])
+    .handler(a.handler.function(getDownlineTreeFn)),
 });
 
 export type Schema = ClientSchema<typeof schema>;
 
 export const data = defineData({
+  name: "aimearn",
   schema,
   authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
+    defaultAuthorizationMode: "userPool",
+    apiKeyAuthorizationMode: {
+      expiresInDays: 30,
+    },
   },
 });
-
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
-
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
-
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
-
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
-
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
-
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
-
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
